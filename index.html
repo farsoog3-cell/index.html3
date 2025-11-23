@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>نظام المستخدم الكامل</title>
+<title>نظام المستخدم الآمن</title>
 <style>
   body { margin:0; font-family:sans-serif; background:#fff7f0; }
   h1,h2,h3,h4{margin:0;}
   input,textarea,button{font-family:sans-serif;}
-  
+
   /* --- صفحة تسجيل الدخول / إنشاء حساب --- */
   #authPage{display:flex; justify-content:center; align-items:center; height:100vh;}
   #authContainer{width:400px; padding:30px; background:#fff; border-radius:16px; box-shadow:0 6px 20px rgba(0,0,0,0.1); text-align:center;}
@@ -16,7 +16,7 @@
   #authContainer button{width:100%; padding:14px; background:#ff6a00; color:white; border:none; border-radius:10px; margin-top:15px; cursor:pointer; font-weight:bold; font-size:16px; transition:0.3s;}
   #authContainer button:hover{background:#e65e00;}
   #authContainer .switch{margin-top:15px; font-size:14px; color:#555; cursor:pointer;}
-  
+
   /* --- الصفحة العامة --- */
   #homePage{display:none; padding:20px;}
   .menu-btn{position:fixed; top:20px; right:20px; background:#ff6a00; color:white; border:none; border-radius:12px; padding:12px 20px; font-weight:bold; cursor:pointer; display:none; transition:0.3s;}
@@ -24,7 +24,7 @@
   #posts{margin-top:30px;}
   .post{background:white; padding:12px; margin:12px 0; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.1);}
   .post h4{color:#ff6a00; margin:0 0 6px 0;}
-  
+
   /* --- الشريط الجانبي --- */
   .sidebar{position:fixed; top:0; right:-300px; width:300px; height:100%; background:white; padding:25px; transition:0.3s; box-shadow:-2px 0 12px rgba(0,0,0,0.2); display:none;}
   .sidebar.open{right:0; display:block;}
@@ -37,7 +37,7 @@
   .sidebar button.delete:hover{background:#a00000;}
   .sidebar button.profile{background:#00aaff; color:white;}
   .sidebar button.profile:hover{background:#0088cc;}
-  
+
   /* --- صفحة المستخدم --- */
   #profilePage{display:none; padding:20px;}
   #profilePage textarea{width:100%; padding:12px; border-radius:10px; border:1px solid #ddd; margin-bottom:10px; font-size:14px; resize:none;}
@@ -55,7 +55,7 @@
     <input type="text" id="username" placeholder="اسم المستخدم">
     <input type="text" id="phone" placeholder="رقم الهاتف">
     <input type="password" id="password" placeholder="كلمة السر">
-    <button id="mainBtn" onclick="register()">إنشاء حساب</button>
+    <button id="mainBtn" onclick="registerOrLogin()">إنشاء حساب</button>
     <div class="switch" onclick="toggleForm()">لديك حساب؟ تسجيل دخول</div>
   </div>
 </div>
@@ -72,7 +72,7 @@
   <h2>حسابي الشخصي</h2>
   <p><b>الاسم:</b> <span id="infoName"></span></p>
   <p><b>رقم الهاتف:</b> <span id="infoPhone"></span></p>
-  <p><b>كلمة السر:</b> <span id="infoPass"></span></p>
+  <p><b>كلمة السر:</b> ********</p>
   <button class="profile" onclick="openProfile()">حسابي الشخصي</button>
   <button class="logout" onclick="logout()">تسجيل خروج</button>
   <button class="delete" onclick="deleteAccount()">حذف الحساب</button>
@@ -88,7 +88,7 @@
 
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js';
-import { getDatabase, ref, set, get, push, onValue, remove } from 'https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js';
+import { getDatabase, ref, set, get, push, onChildAdded, remove } from 'https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDVYoWats4bhKLbO8cu9hQ73WBjty-e5mA',
@@ -103,7 +103,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// --- تسجيل الدخول / إنشاء حساب ---
 let isLogin = false;
 function toggleForm() {
   isLogin = !isLogin;
@@ -112,7 +111,7 @@ function toggleForm() {
   document.getElementById('username').style.display = isLogin ? 'none' : 'block';
 }
 
-window.register = async function() {
+async function registerOrLogin(){
   const username = document.getElementById('username').value.trim();
   const phone = document.getElementById('phone').value.trim();
   const password = document.getElementById('password').value.trim();
@@ -131,13 +130,18 @@ window.register = async function() {
   openHome();
 }
 
-// --- إدارة الجلسة ---
+window.registerOrLogin = registerOrLogin;
+
 window.onload = function(){
   const session = localStorage.getItem('user');
-  if(session) openHome();
+  if(session){
+    openHome();
+  } else {
+    document.getElementById('authPage').style.display='flex';
+    document.getElementById('homePage').style.display='none';
+  }
 }
 
-// --- الصفحة العامة ---
 function openHome(){
   const session = JSON.parse(localStorage.getItem('user'));
   if(!session) return;
@@ -146,12 +150,10 @@ function openHome(){
   document.querySelector('.menu-btn').style.display='inline-block';
   document.getElementById('infoName').textContent = session.username;
   document.getElementById('infoPhone').textContent = session.phone;
-  document.getElementById('infoPass').textContent = session.password;
   document.getElementById('userName').textContent = session.username;
   loadPosts();
 }
 
-// --- الشريط الجانبي ---
 function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('open'); }
 function logout(){ localStorage.removeItem('user'); location.reload(); }
 function deleteAccount(){
@@ -165,7 +167,6 @@ function deleteAccount(){
   }
 }
 
-// --- صفحة المستخدم ---
 function openProfile(){
   document.getElementById('homePage').style.display='none';
   document.getElementById('profilePage').style.display='block';
@@ -176,33 +177,27 @@ function backHome(){
   document.getElementById('homePage').style.display='block';
 }
 
-// --- رفع المنشورات ---
-window.addPost = async function(){
+async function addPost(){
   const content = document.getElementById('postContent').value.trim();
   if(!content){ alert('اكتب منشورك'); return; }
   const session = JSON.parse(localStorage.getItem('user'));
-  await push(ref(db,'posts'), { user: session.username, content });
+  await push(ref(db,'posts'), { user: session.username, content, phone: session.phone });
   document.getElementById('postContent').value='';
-  loadPosts();
 }
 
-// --- عرض المنشورات ---
 function loadPosts(){
   const postsDiv = document.getElementById('posts');
   postsDiv.innerHTML='';
   const postsRef = ref(db,'posts');
-  onValue(postsRef, snapshot=>{
-    postsDiv.innerHTML='';
-    snapshot.forEach(childSnap=>{
-      const post = childSnap.val();
-      const postEl = document.createElement('div');
-      postEl.className='post';
-      postEl.innerHTML=`<h4>${post.user}</h4><p>${post.content}</p>`;
-      postsDiv.prepend(postEl);
-    });
+  onChildAdded(postsRef, snapshot=>{
+    const post = snapshot.val();
+    const postEl = document.createElement('div');
+    postEl.className='post';
+    postEl.innerHTML=`<h4>${post.user}</h4><p>${post.content}</p>`;
+    postsDiv.prepend(postEl);
   });
 }
 </script>
 
 </body>
-</html>
+  </html>
