@@ -5,139 +5,176 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>صفحة المنشورات</title>
 <style>
-    body {
-        margin: 0;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background-color: #e6f0ff;
-        color: #333;
-    }
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #e6f0ff;
+    color: #333;
+}
 
-    header {
-        background: linear-gradient(90deg, #007BFF, #00BFFF);
-        color: white;
-        padding: 20px;
-        text-align: center;
-        font-size: 1.5em;
-        font-weight: bold;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    }
+header {
+    background: linear-gradient(90deg, #007BFF, #00BFFF);
+    color: white;
+    padding: 20px;
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
 
-    main {
-        max-width: 800px;
-        margin: 20px auto;
-        padding: 0 10px;
-    }
+main {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 0 10px;
+}
 
-    .login-container, .post-container {
-        background-color: white;
-        padding: 20px;
-        margin-bottom: 20px;
-        border-radius: 15px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
+.login-container, .post-container {
+    background-color: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
 
-    input, textarea, button {
-        width: 100%;
-        padding: 12px;
-        margin-top: 10px;
-        border-radius: 8px;
-        border: 1px solid #ccc;
-        box-sizing: border-box;
-        font-size: 1em;
-    }
+input, textarea, button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    font-size: 1em;
+}
 
-    button {
-        background: linear-gradient(90deg, #007BFF, #00BFFF);
-        color: white;
-        border: none;
-        cursor: pointer;
-        font-weight: bold;
-        transition: 0.3s;
-    }
+button {
+    background: linear-gradient(90deg, #007BFF, #00BFFF);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
 
-    button:hover {
-        background: linear-gradient(90deg, #0056b3, #0099cc);
-    }
+button:hover {
+    background: linear-gradient(90deg, #0056b3, #0099cc);
+}
 
-    .post {
-        background-color: #fff;
-        border-radius: 15px;
-        padding: 20px;
-        margin-bottom: 20px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        transition: 0.3s;
-    }
+.post {
+    background-color: #fff;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    position: relative;
+}
 
-    .post:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-    }
+.post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
 
-    .post-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 10px;
-    }
+.username {
+    font-weight: bold;
+    font-size: 1.1em;
+}
 
-    .post-header strong {
-        font-size: 1.1em;
-    }
+.options {
+    cursor: pointer;
+    font-size: 1.5em;
+    position: relative;
+}
 
-    .post-content {
-        margin-bottom: 15px;
-        font-size: 1em;
-        line-height: 1.5;
-    }
+.options-menu {
+    display: none;
+    position: absolute;
+    top: 25px;
+    right: 0;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    z-index: 10;
+}
 
-    .post-buttons button {
-        width: auto;
-        margin-right: 10px;
-        margin-top: 5px;
-        padding: 8px 16px;
-        font-size: 0.9em;
-        border-radius: 8px;
-    }
+.options-menu button {
+    width: 100%;
+    border: none;
+    background: none;
+    padding: 10px 15px;
+    text-align: right;
+    cursor: pointer;
+}
 
-    .likes-comments {
-        display: flex;
-        justify-content: space-between;
-        font-size: 0.9em;
-        margin-top: 10px;
-        color: #555;
-    }
+.options-menu button:hover {
+    background-color: #f0f0f0;
+}
 
+.post-content {
+    margin-bottom: 15px;
+    font-size: 1em;
+    line-height: 1.5;
+}
+
+.post-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.post-actions {
+    display: flex;
+    gap: 15px;
+    font-size: 1.2em;
+    cursor: pointer;
+    color: #555;
+}
+
+.post-actions span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.views {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #555;
+    font-size: 0.9em;
+}
+
+.comments-container {
+    margin-top: 10px;
+}
+
+.comment {
+    margin-top: 5px;
+    font-size: 0.9em;
+    padding-left: 10px;
+    border-left: 2px solid #007BFF;
+}
+
+.comment-input {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.comment-input input {
+    flex: 1;
+}
+
+@media (max-width: 600px) {
+    .post-actions {
+        flex-wrap: wrap;
+    }
     .comment-input {
-        margin-top: 10px;
-        display: flex;
-        gap: 10px;
+        flex-direction: column;
     }
-
-    .comment-input input {
-        flex: 1;
-    }
-
-    .comments-container .comment {
-        margin-top: 5px;
-        font-size: 0.9em;
-        padding-left: 10px;
-        border-left: 2px solid #007BFF;
-    }
-
-    @media (max-width: 600px) {
-        header, main {
-            padding: 10px;
-        }
-        .post-buttons button {
-            margin-top: 5px;
-            margin-right: 0;
-            display: block;
-            width: 100%;
-        }
-        .comment-input {
-            flex-direction: column;
-        }
-    }
+}
 </style>
 </head>
 <body>
@@ -162,91 +199,116 @@
 </main>
 
 <script>
-    let currentUser = "";
-    const posts = [];
+let currentUser = "";
+const posts = [];
 
-    function login() {
-        const usernameInput = document.getElementById('username').value.trim();
-        if (usernameInput === "") return alert("يرجى إدخال اسم المستخدم");
-        currentUser = usernameInput;
-        document.getElementById('login-container').style.display = 'none';
-        document.getElementById('create-post-container').style.display = 'block';
-    }
+function login() {
+    const usernameInput = document.getElementById('username').value.trim();
+    if (!usernameInput) return alert("يرجى إدخال اسم المستخدم");
+    currentUser = usernameInput;
+    document.getElementById('login-container').style.display = 'none';
+    document.getElementById('create-post-container').style.display = 'block';
+}
 
-    function createPost() {
-        const content = document.getElementById('post-content').value.trim();
-        if (content === "") return alert("المنشور فارغ");
-        const post = {
-            id: Date.now(),
-            user: currentUser,
-            content: content,
-            likes: 0,
-            comments: [],
-            views: 0
-        };
-        posts.unshift(post);
-        document.getElementById('post-content').value = '';
-        renderPosts();
-    }
+function createPost() {
+    const content = document.getElementById('post-content').value.trim();
+    if (!content) return alert("المنشور فارغ");
+    const post = {
+        id: Date.now(),
+        user: currentUser,
+        content,
+        likes: 0,
+        comments: [],
+        views: 0
+    };
+    posts.unshift(post);
+    document.getElementById('post-content').value = '';
+    renderPosts();
+}
 
-    function renderPosts() {
-        const container = document.getElementById('posts-container');
-        container.innerHTML = '';
-        posts.forEach(post => {
-            post.views++;
-            const postDiv = document.createElement('div');
-            postDiv.className = 'post';
-            postDiv.innerHTML = `
-                <div class="post-header">
-                    <strong>${post.user}</strong>
-                    <div class="post-buttons">
+function renderPosts() {
+    const container = document.getElementById('posts-container');
+    container.innerHTML = '';
+    posts.forEach(post => {
+        post.views++;
+        const postDiv = document.createElement('div');
+        postDiv.className = 'post';
+        postDiv.innerHTML = `
+            <div class="post-header">
+                <div class="username">${post.user}</div>
+                <div class="options" onclick="toggleMenu(${post.id})">⋮
+                    <div class="options-menu" id="menu-${post.id}">
                         <button onclick="editPost(${post.id})">تعديل</button>
                         <button onclick="deletePost(${post.id})">حذف</button>
                     </div>
                 </div>
-                <div class="post-content">${post.content}</div>
-                <div class="likes-comments">
-                    <span>❤️ ${post.likes}</span>
-                    <span>المشاهدات: ${post.views}</span>
+            </div>
+            <div class="post-content">${post.content}</div>
+            <div class="post-footer">
+                <div class="post-actions">
+                    <span onclick="toggleLike(${post.id})">❤️ ${post.likes}</span>
+                    <span onclick="focusComment(${post.id)">💬 تعليق</span>
+                    <span onclick="sharePost(${post.id})">🔗 مشاركة</span>
                 </div>
-                <div class="comment-input">
-                    <input type="text" id="comment-${post.id}" placeholder="أضف تعليق...">
-                    <button onclick="addComment(${post.id})">تعليق</button>
-                </div>
-                <div class="comments-container" id="comments-${post.id}">
-                    ${post.comments.map(c => `<div class="comment"><strong>${c.user}:</strong> ${c.text}</div>`).join('')}
-                </div>
-            `;
-            container.appendChild(postDiv);
-        });
-    }
+                <div class="views">👁 ${post.views}</div>
+            </div>
+            <div class="comment-input">
+                <input type="text" id="comment-${post.id}" placeholder="أضف تعليق...">
+                <button onclick="addComment(${post.id})">تعليق</button>
+            </div>
+            <div class="comments-container" id="comments-${post.id}">
+                ${post.comments.map(c => `<div class="comment"><strong>${c.user}:</strong> ${c.text}</div>`).join('')}
+            </div>
+        `;
+        container.appendChild(postDiv);
+    });
+}
 
-    function editPost(postId) {
-        const post = posts.find(p => p.id === postId);
-        const newContent = prompt("تعديل المنشور:", post.content);
-        if (newContent !== null) {
-            post.content = newContent;
-            renderPosts();
-        }
-    }
+function toggleMenu(postId) {
+    const menu = document.getElementById(`menu-${postId}`);
+    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+}
 
-    function deletePost(postId) {
-        const index = posts.findIndex(p => p.id === postId);
-        if (index !== -1) {
-            posts.splice(index, 1);
-            renderPosts();
-        }
-    }
-
-    function addComment(postId) {
-        const post = posts.find(p => p.id === postId);
-        const input = document.getElementById(`comment-${postId}`);
-        const text = input.value.trim();
-        if (text === "") return;
-        post.comments.push({user: currentUser, text: text});
-        input.value = '';
+function editPost(postId) {
+    const post = posts.find(p => p.id === postId);
+    const newContent = prompt("تعديل المنشور:", post.content);
+    if (newContent !== null) {
+        post.content = newContent;
         renderPosts();
     }
+}
+
+function deletePost(postId) {
+    const index = posts.findIndex(p => p.id === postId);
+    if (index !== -1) {
+        posts.splice(index, 1);
+        renderPosts();
+    }
+}
+
+function addComment(postId) {
+    const post = posts.find(p => p.id === postId);
+    const input = document.getElementById(`comment-${postId}`);
+    const text = input.value.trim();
+    if (!text) return;
+    post.comments.push({user: currentUser, text});
+    input.value = '';
+    renderPosts();
+}
+
+function toggleLike(postId) {
+    const post = posts.find(p => p.id === postId);
+    post.likes++;
+    renderPosts();
+}
+
+function focusComment(postId) {
+    document.getElementById(`comment-${postId}`).focus();
+}
+
+function sharePost(postId) {
+    alert("رابط المشاركة جاهز! (محاكاة)");
+}
 </script>
 
 </body>
