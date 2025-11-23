@@ -1,90 +1,149 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>صفحة منشورات</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #e6f0ff;
-            color: #000;
-        }
-        header {
-            background-color: #007BFF;
-            color: white;
-            padding: 15px;
-            text-align: center;
-        }
-        main {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 0 10px;
-        }
-        .login-container, .post-container {
-            background-color: white;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        }
-        input, textarea, button {
-            width: 100%;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>صفحة المنشورات</title>
+<style>
+    body {
+        margin: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #e6f0ff;
+        color: #333;
+    }
+
+    header {
+        background: linear-gradient(90deg, #007BFF, #00BFFF);
+        color: white;
+        padding: 20px;
+        text-align: center;
+        font-size: 1.5em;
+        font-weight: bold;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    main {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 0 10px;
+    }
+
+    .login-container, .post-container {
+        background-color: white;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    input, textarea, button {
+        width: 100%;
+        padding: 12px;
+        margin-top: 10px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+        font-size: 1em;
+    }
+
+    button {
+        background: linear-gradient(90deg, #007BFF, #00BFFF);
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+    button:hover {
+        background: linear-gradient(90deg, #0056b3, #0099cc);
+    }
+
+    .post {
+        background-color: #fff;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: 0.3s;
+    }
+
+    .post:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+
+    .post-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .post-header strong {
+        font-size: 1.1em;
+    }
+
+    .post-content {
+        margin-bottom: 15px;
+        font-size: 1em;
+        line-height: 1.5;
+    }
+
+    .post-buttons button {
+        width: auto;
+        margin-right: 10px;
+        margin-top: 5px;
+        padding: 8px 16px;
+        font-size: 0.9em;
+        border-radius: 8px;
+    }
+
+    .likes-comments {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.9em;
+        margin-top: 10px;
+        color: #555;
+    }
+
+    .comment-input {
+        margin-top: 10px;
+        display: flex;
+        gap: 10px;
+    }
+
+    .comment-input input {
+        flex: 1;
+    }
+
+    .comments-container .comment {
+        margin-top: 5px;
+        font-size: 0.9em;
+        padding-left: 10px;
+        border-left: 2px solid #007BFF;
+    }
+
+    @media (max-width: 600px) {
+        header, main {
             padding: 10px;
-            margin-top: 10px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            box-sizing: border-box;
-        }
-        button {
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        .post {
-            border-bottom: 1px solid #ddd;
-            padding: 10px 0;
         }
         .post-buttons button {
-            width: auto;
-            margin-right: 5px;
             margin-top: 5px;
-        }
-        .likes-comments {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 5px;
-            font-size: 14px;
+            margin-right: 0;
+            display: block;
+            width: 100%;
         }
         .comment-input {
-            margin-top: 10px;
+            flex-direction: column;
         }
-        .comment {
-            margin-top: 5px;
-            font-size: 14px;
-            padding-left: 10px;
-        }
-        @media (max-width: 600px) {
-            header, main {
-                padding: 10px;
-            }
-            .post-buttons button {
-                margin-top: 5px;
-                margin-right: 0;
-                display: block;
-            }
-        }
-    </style>
+    }
+</style>
 </head>
 <body>
 
 <header>
-    <h1>صفحة المنشورات</h1>
+    صفحة المنشورات
 </header>
 
 <main>
@@ -108,10 +167,7 @@
 
     function login() {
         const usernameInput = document.getElementById('username').value.trim();
-        if (usernameInput === "") {
-            alert("يرجى إدخال اسم المستخدم");
-            return;
-        }
+        if (usernameInput === "") return alert("يرجى إدخال اسم المستخدم");
         currentUser = usernameInput;
         document.getElementById('login-container').style.display = 'none';
         document.getElementById('create-post-container').style.display = 'block';
@@ -137,16 +193,18 @@
         const container = document.getElementById('posts-container');
         container.innerHTML = '';
         posts.forEach(post => {
-            post.views++; // زيادة عدد المشاهدات
+            post.views++;
             const postDiv = document.createElement('div');
             postDiv.className = 'post';
             postDiv.innerHTML = `
-                <strong>${post.user}</strong> نشر:
-                <p>${post.content}</p>
-                <div class="post-buttons">
-                    <button onclick="editPost(${post.id})">تعديل</button>
-                    <button onclick="deletePost(${post.id})">حذف</button>
+                <div class="post-header">
+                    <strong>${post.user}</strong>
+                    <div class="post-buttons">
+                        <button onclick="editPost(${post.id})">تعديل</button>
+                        <button onclick="deletePost(${post.id})">حذف</button>
+                    </div>
                 </div>
+                <div class="post-content">${post.content}</div>
                 <div class="likes-comments">
                     <span>❤️ ${post.likes}</span>
                     <span>المشاهدات: ${post.views}</span>
@@ -155,7 +213,7 @@
                     <input type="text" id="comment-${post.id}" placeholder="أضف تعليق...">
                     <button onclick="addComment(${post.id})">تعليق</button>
                 </div>
-                <div id="comments-${post.id}">
+                <div class="comments-container" id="comments-${post.id}">
                     ${post.comments.map(c => `<div class="comment"><strong>${c.user}:</strong> ${c.text}</div>`).join('')}
                 </div>
             `;
