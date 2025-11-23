@@ -1,203 +1,117 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>نظام المستخدم الآمن</title>
+<title>تسجيل الدخول / إنشاء حساب</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo&display=swap" rel="stylesheet">
 <style>
-  body { margin:0; font-family:sans-serif; background:#fff7f0; }
-  h1,h2,h3,h4{margin:0;}
-  input,textarea,button{font-family:sans-serif;}
-
-  /* --- صفحة تسجيل الدخول / إنشاء حساب --- */
-  #authPage{display:flex; justify-content:center; align-items:center; height:100vh;}
-  #authContainer{width:400px; padding:30px; background:#fff; border-radius:16px; box-shadow:0 6px 20px rgba(0,0,0,0.1); text-align:center;}
-  #authContainer input, #authContainer textarea{width:100%; padding:12px; margin:10px 0; border:1px solid #ddd; border-radius:8px; font-size:14px;}
-  #authContainer button{width:100%; padding:14px; background:#ff6a00; color:white; border:none; border-radius:10px; margin-top:15px; cursor:pointer; font-weight:bold; font-size:16px; transition:0.3s;}
-  #authContainer button:hover{background:#e65e00;}
-  #authContainer .switch{margin-top:15px; font-size:14px; color:#555; cursor:pointer;}
-
-  /* --- الصفحة العامة --- */
-  #homePage{display:none; padding:20px;}
-  .menu-btn{position:fixed; top:20px; right:20px; background:#ff6a00; color:white; border:none; border-radius:12px; padding:12px 20px; font-weight:bold; cursor:pointer; display:none; transition:0.3s;}
-  .menu-btn:hover{background:#e65e00;}
-  #posts{margin-top:30px;}
-  .post{background:white; padding:12px; margin:12px 0; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.1);}
-  .post h4{color:#ff6a00; margin:0 0 6px 0;}
-
-  /* --- الشريط الجانبي --- */
-  .sidebar{position:fixed; top:0; right:-300px; width:300px; height:100%; background:white; padding:25px; transition:0.3s; box-shadow:-2px 0 12px rgba(0,0,0,0.2); display:none;}
-  .sidebar.open{right:0; display:block;}
-  .sidebar h2{color:#ff6a00; text-align:center; margin-bottom:20px;}
-  .sidebar p, .sidebar button{margin:10px 0; font-size:14px;}
-  .sidebar button{width:100%; padding:12px; border:none; border-radius:10px; cursor:pointer; font-weight:bold;}
-  .sidebar button.logout{background:#ff6a00; color:white;}
-  .sidebar button.logout:hover{background:#e65e00;}
-  .sidebar button.delete{background:#d30000; color:white;}
-  .sidebar button.delete:hover{background:#a00000;}
-  .sidebar button.profile{background:#00aaff; color:white;}
-  .sidebar button.profile:hover{background:#0088cc;}
-
-  /* --- صفحة المستخدم --- */
-  #profilePage{display:none; padding:20px;}
-  #profilePage textarea{width:100%; padding:12px; border-radius:10px; border:1px solid #ddd; margin-bottom:10px; font-size:14px; resize:none;}
-  #profilePage button{width:100%; padding:14px; border:none; border-radius:10px; cursor:pointer; font-weight:bold; background:#ff6a00; color:white; font-size:16px; margin-bottom:10px; transition:0.3s;}
-  #profilePage button:hover{background:#e65e00;}
-  #profilePage button.back{background:#888;}
+body {
+  font-family: 'Cairo', sans-serif;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  margin:0;
+  background: linear-gradient(135deg, #6C63FF, #3A3D98);
+}
+.container {
+  background:#fff;
+  padding:40px 30px;
+  border-radius:15px;
+  width:350px;
+  text-align:center;
+  box-shadow:0 15px 25px rgba(0,0,0,0.2);
+}
+h2 { margin-bottom:25px; color:#3A3D98; }
+input { width:100%; padding:12px; margin:10px 0; border-radius:8px; border:1px solid #ccc; font-size:16px; outline:none; }
+input:focus { border-color:#6C63FF; box-shadow:0 0 5px #6C63FF; }
+button { width:100%; padding:12px; margin-top:15px; border:none; border-radius:8px; background:#6C63FF; color:#fff; font-size:16px; cursor:pointer; transition:.3s; }
+button:hover { background:#3A3D98; }
+.toggle { margin-top:15px; cursor:pointer; color:#6C63FF; font-weight:bold; }
 </style>
 </head>
 <body>
 
-<!-- صفحة تسجيل الدخول / إنشاء حساب -->
-<div id="authPage">
-  <div id="authContainer">
-    <h2 id="formTitle">إنشاء حساب</h2>
-    <input type="text" id="username" placeholder="اسم المستخدم">
-    <input type="text" id="phone" placeholder="رقم الهاتف">
-    <input type="password" id="password" placeholder="كلمة السر">
-    <button id="mainBtn" onclick="registerOrLogin()">إنشاء حساب</button>
-    <div class="switch" onclick="toggleForm()">لديك حساب؟ تسجيل دخول</div>
-  </div>
-</div>
-
-<!-- الصفحة العامة -->
-<div id="homePage">
-  <button class="menu-btn" onclick="toggleSidebar()">حسابي</button>
-  <h1>مرحباً بك في الصفحة العامة!</h1>
-  <div id="posts"></div>
-</div>
-
-<!-- الشريط الجانبي -->
-<div id="sidebar" class="sidebar">
-  <h2>حسابي الشخصي</h2>
-  <p><b>الاسم:</b> <span id="infoName"></span></p>
-  <p><b>رقم الهاتف:</b> <span id="infoPhone"></span></p>
-  <p><b>كلمة السر:</b> ********</p>
-  <button class="profile" onclick="openProfile()">حسابي الشخصي</button>
-  <button class="logout" onclick="logout()">تسجيل خروج</button>
-  <button class="delete" onclick="deleteAccount()">حذف الحساب</button>
-</div>
-
-<!-- صفحة المستخدم -->
-<div id="profilePage">
-  <h2>مرحباً <span id="userName"></span></h2>
-  <textarea id="postContent" rows="4" placeholder="اكتب منشورك هنا..."></textarea>
-  <button onclick="addPost()">نشر المنشور</button>
-  <button class="back" onclick="backHome()">العودة للصفحة العامة</button>
+<div class="container">
+  <h2 id="form-title">إنشاء حساب</h2>
+  <input type="text" id="name" placeholder="الاسم">
+  <input type="text" id="phone" placeholder="رقم الهاتف">
+  <input type="password" id="password" placeholder="كلمة السر">
+  <button id="submit-btn">إنشاء حساب</button>
+  <div class="toggle" id="toggle-form">لديك حساب؟ تسجيل الدخول</div>
 </div>
 
 <script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js';
-import { getDatabase, ref, set, get, push, onChildAdded, remove } from 'https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js';
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyDVYoWats4bhKLbO8cu9hQ73WBjty-e5mA',
-  authDomain: 'aljj-28d36.firebaseapp.com',
-  databaseURL: 'https://aljj-28d36-default-rtdb.firebaseio.com',
-  projectId: 'aljj-28d36',
-  storageBucket: 'aljj-28d36.firebasestorage.app',
-  messagingSenderId: '256012982420',
-  appId: '1:256012982420:web:3a1541af04b99d658e7c81'
+  apiKey: "AIzaSyDVYoWats4bhKLbO8cu9hQ73WBjty-e5mA",
+  authDomain: "aljj-28d36.firebaseapp.com",
+  databaseURL: "https://aljj-28d36-default-rtdb.firebaseio.com",
+  projectId: "aljj-28d36",
+  storageBucket: "aljj-28d36.firebasestorage.app",
+  messagingSenderId: "256012982420",
+  appId: "1:256012982420:web:3a1541af04b99d658e7c81",
+  measurementId: "G-43WH1GKJFC"
 };
-
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
+const formTitle = document.getElementById('form-title');
+const nameInput = document.getElementById('name');
+const phoneInput = document.getElementById('phone');
+const passwordInput = document.getElementById('password');
+const submitBtn = document.getElementById('submit-btn');
+const toggleForm = document.getElementById('toggle-form');
+
 let isLogin = false;
-function toggleForm() {
+toggleForm.addEventListener('click', () => {
   isLogin = !isLogin;
-  document.getElementById('formTitle').innerText = isLogin ? 'تسجيل الدخول' : 'إنشاء حساب';
-  document.getElementById('mainBtn').innerText = isLogin ? 'تسجيل دخول' : 'إنشاء حساب';
-  document.getElementById('username').style.display = isLogin ? 'none' : 'block';
-}
-
-async function registerOrLogin(){
-  const username = document.getElementById('username').value.trim();
-  const phone = document.getElementById('phone').value.trim();
-  const password = document.getElementById('password').value.trim();
-  if(!phone || !password || (!isLogin && !username)) { alert('يرجى تعبئة جميع الحقول'); return; }
-
   if(isLogin){
-    const data = await get(ref(db,'users/'+phone));
-    if(!data.exists()){ alert('الحساب غير موجود'); return; }
-    const user = data.val();
-    if(user.password !== password){ alert('كلمة السر غير صحيحة'); return; }
-    localStorage.setItem('user', JSON.stringify(user));
+    formTitle.textContent = 'تسجيل الدخول';
+    nameInput.style.display = 'none';
+    submitBtn.textContent = 'تسجيل دخول';
+    toggleForm.textContent = 'ليس لديك حساب؟ إنشاء حساب';
   } else {
-    await set(ref(db,'users/'+phone), { username, phone, password });
-    localStorage.setItem('user', JSON.stringify({username, phone, password}));
+    formTitle.textContent = 'إنشاء حساب';
+    nameInput.style.display = 'block';
+    submitBtn.textContent = 'إنشاء حساب';
+    toggleForm.textContent = 'لديك حساب؟ تسجيل الدخول';
   }
-  openHome();
+});
+
+if(localStorage.getItem('loggedInUser')){
+  window.location.href = 'zol.html';
 }
 
-window.registerOrLogin = registerOrLogin;
-
-window.onload = function(){
-  const session = localStorage.getItem('user');
-  if(session){
-    openHome();
+submitBtn.addEventListener('click', async () => {
+  const name = nameInput.value.trim();
+  const phone = phoneInput.value.trim();
+  const password = passwordInput.value.trim();
+  if(!phone || !password || (!isLogin && !name)){
+    alert('يرجى ملء جميع الحقول!');
+    return;
+  }
+  const userRef = ref(db, 'users/' + phone);
+  if(isLogin){
+    const snapshot = await get(userRef);
+    if(snapshot.exists() && snapshot.val().password === password){
+      localStorage.setItem('loggedInUser', JSON.stringify(snapshot.val()));
+      window.location.href = 'zol.html';
+    } else alert('رقم الهاتف أو كلمة السر غير صحيحة');
   } else {
-    document.getElementById('authPage').style.display='flex';
-    document.getElementById('homePage').style.display='none';
+    const snapshot = await get(userRef);
+    if(snapshot.exists()) alert('الحساب موجود بالفعل');
+    else {
+      await set(userRef, {name, phone, password});
+      localStorage.setItem('loggedInUser', JSON.stringify({name, phone}));
+      alert('تم إنشاء الحساب بنجاح!');
+      window.location.href = 'zol.html';
+    }
   }
-}
-
-function openHome(){
-  const session = JSON.parse(localStorage.getItem('user'));
-  if(!session) return;
-  document.getElementById('authPage').style.display='none';
-  document.getElementById('homePage').style.display='block';
-  document.querySelector('.menu-btn').style.display='inline-block';
-  document.getElementById('infoName').textContent = session.username;
-  document.getElementById('infoPhone').textContent = session.phone;
-  document.getElementById('userName').textContent = session.username;
-  loadPosts();
-}
-
-function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('open'); }
-function logout(){ localStorage.removeItem('user'); location.reload(); }
-function deleteAccount(){
-  const session = JSON.parse(localStorage.getItem('user'));
-  if(confirm('هل أنت متأكد من حذف الحساب؟')){
-    remove(ref(db,'users/'+session.phone)).then(()=>{
-      localStorage.removeItem('user');
-      alert('تم حذف الحساب');
-      location.reload();
-    });
-  }
-}
-
-function openProfile(){
-  document.getElementById('homePage').style.display='none';
-  document.getElementById('profilePage').style.display='block';
-  document.getElementById('sidebar').classList.remove('open');
-}
-function backHome(){
-  document.getElementById('profilePage').style.display='none';
-  document.getElementById('homePage').style.display='block';
-}
-
-async function addPost(){
-  const content = document.getElementById('postContent').value.trim();
-  if(!content){ alert('اكتب منشورك'); return; }
-  const session = JSON.parse(localStorage.getItem('user'));
-  await push(ref(db,'posts'), { user: session.username, content, phone: session.phone });
-  document.getElementById('postContent').value='';
-}
-
-function loadPosts(){
-  const postsDiv = document.getElementById('posts');
-  postsDiv.innerHTML='';
-  const postsRef = ref(db,'posts');
-  onChildAdded(postsRef, snapshot=>{
-    const post = snapshot.val();
-    const postEl = document.createElement('div');
-    postEl.className='post';
-    postEl.innerHTML=`<h4>${post.user}</h4><p>${post.content}</p>`;
-    postsDiv.prepend(postEl);
-  });
-}
+});
 </script>
-
 </body>
-  </html>
+</html>
