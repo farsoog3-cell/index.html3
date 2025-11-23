@@ -3,47 +3,46 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>صفحة المنشورات</title>
+<title>إنستغرام وهمي</title>
 <style>
 body {
     margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #e6f0ff;
+    background-color: #f0f2f5;
     color: #333;
 }
 
 header {
-    background: linear-gradient(90deg, #007BFF, #00BFFF);
+    background: linear-gradient(90deg, #007BFF, #0056b3);
     color: white;
-    padding: 20px;
+    padding: 15px;
     text-align: center;
     font-size: 1.5em;
     font-weight: bold;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 main {
-    max-width: 800px;
+    max-width: 600px;
     margin: 20px auto;
     padding: 0 10px;
 }
 
 .login-container, .post-container {
     background-color: white;
-    padding: 20px;
+    padding: 15px;
     margin-bottom: 20px;
     border-radius: 15px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
 }
 
 input, textarea, button {
     width: 100%;
-    padding: 12px;
+    padding: 10px;
     margin-top: 10px;
     border-radius: 8px;
     border: 1px solid #ccc;
-    box-sizing: border-box;
     font-size: 1em;
+    box-sizing: border-box;
 }
 
 button {
@@ -62,29 +61,29 @@ button:hover {
 .post {
     background-color: #fff;
     border-radius: 15px;
-    padding: 20px;
     margin-bottom: 20px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
     position: relative;
+    overflow: hidden;
 }
 
 .post-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    padding: 10px 15px;
+    background-color: #007BFF;
+    color: white;
 }
 
 .username {
     font-weight: bold;
-    font-size: 1.1em;
 }
 
 .options {
     cursor: pointer;
-    font-size: 1.5em;
+    font-size: 1.2em;
     position: relative;
-    user-select: none;
 }
 
 .options-menu {
@@ -93,10 +92,10 @@ button:hover {
     top: 25px;
     right: 0;
     background: white;
+    color: black;
     border: 1px solid #ccc;
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     z-index: 10;
 }
 
@@ -114,7 +113,7 @@ button:hover {
 }
 
 .post-content {
-    margin-bottom: 15px;
+    padding: 15px;
     font-size: 1em;
     line-height: 1.5;
     white-space: pre-wrap;
@@ -124,14 +123,17 @@ button:hover {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 10px 15px;
+    background-color: #007BFF;
+    color: white;
 }
 
 .post-actions {
     display: flex;
-    gap: 15px;
+    gap: 20px;
     font-size: 1.2em;
     cursor: pointer;
-    color: #555;
+    align-items: center;
 }
 
 .post-actions span {
@@ -144,46 +146,86 @@ button:hover {
     display: flex;
     align-items: center;
     gap: 5px;
-    color: #555;
     font-size: 0.9em;
 }
 
-.comments-container {
-    margin-top: 10px;
+/* Modal التعليقات */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 100;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    backdrop-filter: blur(5px);
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 50px auto;
+    padding: 0;
+    border-radius: 15px;
+    max-width: 500px;
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.modal-header {
+    background-color: #007BFF;
+    color: white;
+    padding: 15px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.close {
+    font-size: 1.5em;
+    cursor: pointer;
+}
+
+.modal-body {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    background-color: #f8f9fa;
 }
 
 .comment {
-    margin-top: 5px;
-    font-size: 0.9em;
-    padding-left: 10px;
-    border-left: 2px solid #007BFF;
+    border-bottom: 1px solid #ddd;
+    padding: 8px 0;
 }
 
-.comment-input {
+.comment strong {
+    margin-right: 5px;
+}
+
+.modal-footer {
+    padding: 10px 15px;
     display: flex;
     gap: 10px;
-    margin-top: 10px;
+    border-top: 1px solid #ccc;
 }
 
-.comment-input input {
+.modal-footer input {
     flex: 1;
+    border-radius: 20px;
+    padding: 10px 15px;
+    border: 1px solid #ccc;
 }
 
-@media (max-width: 600px) {
-    .post-actions {
-        flex-wrap: wrap;
-    }
-    .comment-input {
-        flex-direction: column;
-    }
+.modal-footer button {
+    border-radius: 20px;
+    padding: 10px 20px;
 }
 </style>
 </head>
 <body>
 
-<header>
-    صفحة المنشورات
-</header>
+<header>صفحة المنشورات مثل إنستغرام</header>
 
 <main>
     <div class="login-container" id="login-container">
@@ -200,17 +242,30 @@ button:hover {
     <div id="posts-container"></div>
 </main>
 
+<!-- Modal التعليقات -->
+<div id="commentModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            التعليقات
+            <span class="close" id="closeModal">&times;</span>
+        </div>
+        <div class="modal-body" id="modal-comments"></div>
+        <div class="modal-footer">
+            <input type="text" id="modal-comment-input" placeholder="أضف تعليق...">
+            <button id="modal-comment-btn">تعليق</button>
+        </div>
+    </div>
+</div>
+
 <script>
 let currentUser = "";
 const posts = [];
+let currentCommentPostId = null;
 
 // تسجيل الدخول
 document.getElementById('loginBtn').addEventListener('click', () => {
     const usernameInput = document.getElementById('username').value.trim();
-    if (!usernameInput) {
-        alert("يرجى إدخال اسم المستخدم");
-        return;
-    }
+    if (!usernameInput) { alert("يرجى إدخال اسم المستخدم"); return; }
     currentUser = usernameInput;
     document.getElementById('login-container').style.display = 'none';
     document.getElementById('create-post-container').style.display = 'block';
@@ -221,14 +276,7 @@ document.getElementById('loginBtn').addEventListener('click', () => {
 document.getElementById('createPostBtn').addEventListener('click', () => {
     const content = document.getElementById('post-content').value.trim();
     if (!content) return alert("المنشور فارغ");
-    const post = {
-        id: Date.now(),
-        user: currentUser,
-        content,
-        likes: 0,
-        comments: [],
-        views: 0
-    };
+    const post = { id: Date.now(), user: currentUser, content, likes: 0, comments: [], views: 0 };
     posts.unshift(post);
     document.getElementById('post-content').value = '';
     renderPosts();
@@ -256,17 +304,10 @@ function renderPosts() {
             <div class="post-footer">
                 <div class="post-actions">
                     <span onclick="toggleLike(${post.id})">❤️ ${post.likes}</span>
-                    <span onclick="focusComment(${post.id})">💬 تعليق</span>
+                    <span onclick="openComments(${post.id})">💬 تعليق</span>
                     <span onclick="sharePost(${post.id})">🔗 مشاركة</span>
                 </div>
                 <div class="views">👁 ${post.views}</div>
-            </div>
-            <div class="comment-input">
-                <input type="text" id="comment-${post.id}" placeholder="أضف تعليق...">
-                <button onclick="addComment(${post.id})">تعليق</button>
-            </div>
-            <div class="comments-container" id="comments-${post.id}">
-                ${post.comments.map(c => `<div class="comment"><strong>${c.user}:</strong> ${c.text}</div>`).join('')}
             </div>
         `;
         container.appendChild(postDiv);
@@ -296,28 +337,50 @@ function deletePost(postId) {
     }
 }
 
-function addComment(postId) {
-    const post = posts.find(p => p.id === postId);
-    const input = document.getElementById(`comment-${postId}`);
-    const text = input.value.trim();
-    if (!text) return;
-    post.comments.push({user: currentUser, text});
-    input.value = '';
-    renderPosts();
-}
-
 function toggleLike(postId) {
     const post = posts.find(p => p.id === postId);
     post.likes++;
     renderPosts();
 }
 
-function focusComment(postId) {
-    document.getElementById(`comment-${postId}`).focus();
-}
-
 function sharePost(postId) {
     alert("رابط المشاركة جاهز! (محاكاة)");
+}
+
+// فتح نافذة التعليقات
+function openComments(postId) {
+    currentCommentPostId = postId;
+    updateModalComments();
+    document.getElementById('commentModal').style.display = 'block';
+}
+
+function updateModalComments() {
+    const post = posts.find(p => p.id === currentCommentPostId);
+    const modalComments = document.getElementById('modal-comments');
+    modalComments.innerHTML = post.comments.map(c => `<div class="comment"><strong>${c.user}:</strong> ${c.text}</div>`).join('');
+}
+
+// إضافة تعليق من نافذة Modal
+document.getElementById('modal-comment-btn').addEventListener('click', () => {
+    const input = document.getElementById('modal-comment-input');
+    const text = input.value.trim();
+    if (!text) return;
+    const post = posts.find(p => p.id === currentCommentPostId);
+    post.comments.push({user: currentUser, text});
+    input.value = '';
+    updateModalComments();
+    renderPosts();
+});
+
+// إغلاق نافذة Modal
+document.getElementById('closeModal').addEventListener('click', () => {
+    document.getElementById('commentModal').style.display = 'none';
+});
+
+window.onclick = function(event) {
+    if (event.target == document.getElementById('commentModal')) {
+        document.getElementById('commentModal').style.display = 'none';
+    }
 }
 </script>
 
