@@ -1,117 +1,195 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تسجيل الدخول / إنشاء حساب</title>
-<link href="https://fonts.googleapis.com/css2?family=Cairo&display=swap" rel="stylesheet">
-<style>
-body {
-  font-family: 'Cairo', sans-serif;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-  margin:0;
-  background: linear-gradient(135deg, #6C63FF, #3A3D98);
-}
-.container {
-  background:#fff;
-  padding:40px 30px;
-  border-radius:15px;
-  width:350px;
-  text-align:center;
-  box-shadow:0 15px 25px rgba(0,0,0,0.2);
-}
-h2 { margin-bottom:25px; color:#3A3D98; }
-input { width:100%; padding:12px; margin:10px 0; border-radius:8px; border:1px solid #ccc; font-size:16px; outline:none; }
-input:focus { border-color:#6C63FF; box-shadow:0 0 5px #6C63FF; }
-button { width:100%; padding:12px; margin-top:15px; border:none; border-radius:8px; background:#6C63FF; color:#fff; font-size:16px; cursor:pointer; transition:.3s; }
-button:hover { background:#3A3D98; }
-.toggle { margin-top:15px; cursor:pointer; color:#6C63FF; font-weight:bold; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صفحة منشورات</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #e6f0ff;
+            color: #000;
+        }
+        header {
+            background-color: #007BFF;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        main {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 10px;
+        }
+        .login-container, .post-container {
+            background-color: white;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        input, textarea, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .post {
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+        }
+        .post-buttons button {
+            width: auto;
+            margin-right: 5px;
+            margin-top: 5px;
+        }
+        .likes-comments {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+        .comment-input {
+            margin-top: 10px;
+        }
+        .comment {
+            margin-top: 5px;
+            font-size: 14px;
+            padding-left: 10px;
+        }
+        @media (max-width: 600px) {
+            header, main {
+                padding: 10px;
+            }
+            .post-buttons button {
+                margin-top: 5px;
+                margin-right: 0;
+                display: block;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<div class="container">
-  <h2 id="form-title">إنشاء حساب</h2>
-  <input type="text" id="name" placeholder="الاسم">
-  <input type="text" id="phone" placeholder="رقم الهاتف">
-  <input type="password" id="password" placeholder="كلمة السر">
-  <button id="submit-btn">إنشاء حساب</button>
-  <div class="toggle" id="toggle-form">لديك حساب؟ تسجيل الدخول</div>
-</div>
+<header>
+    <h1>صفحة المنشورات</h1>
+</header>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
+<main>
+    <div class="login-container" id="login-container">
+        <h3>تسجيل الدخول باسم المستخدم</h3>
+        <input type="text" id="username" placeholder="أدخل اسم المستخدم">
+        <button onclick="login()">دخول</button>
+    </div>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDVYoWats4bhKLbO8cu9hQ73WBjty-e5mA",
-  authDomain: "aljj-28d36.firebaseapp.com",
-  databaseURL: "https://aljj-28d36-default-rtdb.firebaseio.com",
-  projectId: "aljj-28d36",
-  storageBucket: "aljj-28d36.firebasestorage.app",
-  messagingSenderId: "256012982420",
-  appId: "1:256012982420:web:3a1541af04b99d658e7c81",
-  measurementId: "G-43WH1GKJFC"
-};
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+    <div class="post-container" id="create-post-container" style="display:none;">
+        <textarea id="post-content" placeholder="اكتب منشورك هنا..."></textarea>
+        <button onclick="createPost()">نشر</button>
+    </div>
 
-const formTitle = document.getElementById('form-title');
-const nameInput = document.getElementById('name');
-const phoneInput = document.getElementById('phone');
-const passwordInput = document.getElementById('password');
-const submitBtn = document.getElementById('submit-btn');
-const toggleForm = document.getElementById('toggle-form');
+    <div id="posts-container"></div>
+</main>
 
-let isLogin = false;
-toggleForm.addEventListener('click', () => {
-  isLogin = !isLogin;
-  if(isLogin){
-    formTitle.textContent = 'تسجيل الدخول';
-    nameInput.style.display = 'none';
-    submitBtn.textContent = 'تسجيل دخول';
-    toggleForm.textContent = 'ليس لديك حساب؟ إنشاء حساب';
-  } else {
-    formTitle.textContent = 'إنشاء حساب';
-    nameInput.style.display = 'block';
-    submitBtn.textContent = 'إنشاء حساب';
-    toggleForm.textContent = 'لديك حساب؟ تسجيل الدخول';
-  }
-});
+<script>
+    let currentUser = "";
+    const posts = [];
 
-if(localStorage.getItem('loggedInUser')){
-  window.location.href = 'zol.html';
-}
-
-submitBtn.addEventListener('click', async () => {
-  const name = nameInput.value.trim();
-  const phone = phoneInput.value.trim();
-  const password = passwordInput.value.trim();
-  if(!phone || !password || (!isLogin && !name)){
-    alert('يرجى ملء جميع الحقول!');
-    return;
-  }
-  const userRef = ref(db, 'users/' + phone);
-  if(isLogin){
-    const snapshot = await get(userRef);
-    if(snapshot.exists() && snapshot.val().password === password){
-      localStorage.setItem('loggedInUser', JSON.stringify(snapshot.val()));
-      window.location.href = 'zol.html';
-    } else alert('رقم الهاتف أو كلمة السر غير صحيحة');
-  } else {
-    const snapshot = await get(userRef);
-    if(snapshot.exists()) alert('الحساب موجود بالفعل');
-    else {
-      await set(userRef, {name, phone, password});
-      localStorage.setItem('loggedInUser', JSON.stringify({name, phone}));
-      alert('تم إنشاء الحساب بنجاح!');
-      window.location.href = 'zol.html';
+    function login() {
+        const usernameInput = document.getElementById('username').value.trim();
+        if (usernameInput === "") {
+            alert("يرجى إدخال اسم المستخدم");
+            return;
+        }
+        currentUser = usernameInput;
+        document.getElementById('login-container').style.display = 'none';
+        document.getElementById('create-post-container').style.display = 'block';
     }
-  }
-});
+
+    function createPost() {
+        const content = document.getElementById('post-content').value.trim();
+        if (content === "") return alert("المنشور فارغ");
+        const post = {
+            id: Date.now(),
+            user: currentUser,
+            content: content,
+            likes: 0,
+            comments: [],
+            views: 0
+        };
+        posts.unshift(post);
+        document.getElementById('post-content').value = '';
+        renderPosts();
+    }
+
+    function renderPosts() {
+        const container = document.getElementById('posts-container');
+        container.innerHTML = '';
+        posts.forEach(post => {
+            post.views++; // زيادة عدد المشاهدات
+            const postDiv = document.createElement('div');
+            postDiv.className = 'post';
+            postDiv.innerHTML = `
+                <strong>${post.user}</strong> نشر:
+                <p>${post.content}</p>
+                <div class="post-buttons">
+                    <button onclick="editPost(${post.id})">تعديل</button>
+                    <button onclick="deletePost(${post.id})">حذف</button>
+                </div>
+                <div class="likes-comments">
+                    <span>❤️ ${post.likes}</span>
+                    <span>المشاهدات: ${post.views}</span>
+                </div>
+                <div class="comment-input">
+                    <input type="text" id="comment-${post.id}" placeholder="أضف تعليق...">
+                    <button onclick="addComment(${post.id})">تعليق</button>
+                </div>
+                <div id="comments-${post.id}">
+                    ${post.comments.map(c => `<div class="comment"><strong>${c.user}:</strong> ${c.text}</div>`).join('')}
+                </div>
+            `;
+            container.appendChild(postDiv);
+        });
+    }
+
+    function editPost(postId) {
+        const post = posts.find(p => p.id === postId);
+        const newContent = prompt("تعديل المنشور:", post.content);
+        if (newContent !== null) {
+            post.content = newContent;
+            renderPosts();
+        }
+    }
+
+    function deletePost(postId) {
+        const index = posts.findIndex(p => p.id === postId);
+        if (index !== -1) {
+            posts.splice(index, 1);
+            renderPosts();
+        }
+    }
+
+    function addComment(postId) {
+        const post = posts.find(p => p.id === postId);
+        const input = document.getElementById(`comment-${postId}`);
+        const text = input.value.trim();
+        if (text === "") return;
+        post.comments.push({user: currentUser, text: text});
+        input.value = '';
+        renderPosts();
+    }
 </script>
+
 </body>
 </html>
