@@ -60,9 +60,13 @@ main { padding:20px; min-height:calc(100vh - 80px); }
 
 <script type="module">
 
+/* ========== Firebase SDK ========== */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-import { getDatabase, ref, set, push, onValue, remove, update, get } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
+import { 
+  getDatabase, ref, set, push, onValue, update, remove, get 
+} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
 
+/* ========== Firebase Config ========== */
 const firebaseConfig = {
   apiKey: "AIzaSyDVYoWats4bhKLbO8cu9hQ73WBjty-e5mA",
   authDomain: "aljj-28d36.firebaseapp.com",
@@ -77,35 +81,38 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// التحقق من تسجيل الدخول
+/* ========== تسجيل الخروج ========== */
 const currentUser = JSON.parse(localStorage.getItem("loggedInUser"));
 if (!currentUser) window.location.href = "index.html";
 
-const postsContainer = document.getElementById("postsContainer");
-const addPostBtn = document.getElementById("addPostBtn");
-const postModal = document.getElementById("postModal");
-const publishBtn = document.getElementById("publishBtn");
-const logoutBtn = document.getElementById("logoutBtn");
-
-logoutBtn.onclick = () => {
+document.getElementById("logoutBtn").onclick = () => {
   localStorage.removeItem("loggedInUser");
   window.location.href = "index.html";
 };
 
+/* ========== عناصر الصفحة ========== */
+const postsContainer = document.getElementById("postsContainer");
+const addPostBtn = document.getElementById("addPostBtn");
+const postModal = document.getElementById("postModal");
+const publishBtn = document.getElementById("publishBtn");
+const postTitle = document.getElementById("postTitle");
+const postDesc = document.getElementById("postDesc");
+
+/* ========== فتح نافذة إضافة منشور ========== */
 addPostBtn.onclick = () => postModal.style.display = "flex";
 postModal.onclick = (e) => { if (e.target === postModal) postModal.style.display = "none"; };
 
-
-// 🔥🔥 النشر الصحيح 100%
+/* ========== نشر منشور ========== */
 publishBtn.onclick = async () => {
-  const title = document.getElementById("postTitle").value.trim();
-  const desc = document.getElementById("postDesc").value.trim();
+  const title = postTitle.value.trim();
+  const desc = postDesc.value.trim();
 
-  if (!title || !desc) return alert("يرجى ملء كل الحقول");
+  if (!title || !desc) return alert("يرجى إدخال جميع الحقول");
 
   try {
-    const postRef = push(ref(db, "posts"));
-    await set(postRef, {
+    const newPostRef = push(ref(db, "posts"));
+
+    await set(newPostRef, {
       title,
       desc,
       authorName: currentUser.name,
@@ -115,21 +122,19 @@ publishBtn.onclick = async () => {
       timestamp: Date.now()
     });
 
-    alert("✔ تم نشر المنشور بنجاح!");
+    alert("✔ تم نشر المنشور بنجاح");
     postModal.style.display = "none";
-    document.getElementById("postTitle").value = "";
-    document.getElementById("postDesc").value = "";
+    postTitle.value = "";
+    postDesc.value = "";
 
   } catch (err) {
     console.error(err);
-    alert("❌ فشل النشر! تحقق من الاتصال.");
+    alert("❌ فشل النشر، تحقق من الاتصال بقاعدة البيانات");
   }
 };
 
-
-// إضافة المنشورات للحائط
-function addPostToDOM(postId, post) {
-
+/* ========== عرض المنشورات ========== */
+function addPostToDOM(id, post) {
   const div = document.createElement("div");
   div.className = "post";
 
@@ -137,38 +142,102 @@ function addPostToDOM(postId, post) {
     <h3>${post.title}</h3>
     <p>${post.desc}</p>
     <small>الكاتب: ${post.authorName} | المشاهدات: ${post.views}</small>
-    <br>
+    <div style="margin-top:5px;">
+      <button class="like-btn">♥</button> <span class="likes-count">${post.likes}</span>
+    </div>
+    <div class="comments" id="comments-${id}"></div>
   `;
 
-  // زر التعديل والحذف للكاتب فقط
+  /* تعديل وحذف */
   if (post.authorPhone === currentUser.phone) {
     const editBtn = document.createElement("button");
-    editBtn.classList.add("edit-btn");
+    editBtn.className = "edit-btn";
     editBtn.textContent = "تعديل";
 
     editBtn.onclick = async () => {
-      const newTitle = prompt("العنوان الجديد", post.title);
-      const newDesc = prompt("الوصف الجديد", post.desc);
+      const newTitle = prompt("العنوان:", post.title);
+      const newDesc = prompt("الوصف:", post.desc);
       if (newTitle && newDesc) {
-        await update(ref(db, "posts/" + postId), { title: newTitle, desc: newDesc });
+        await update(ref(db, "posts/" + id), { title: newTitle, desc: newDesc });
       }
     };
 
-    const delBtn = document.createElement("button");
-    delBtn.classList.add("delete-btn");
-    delBtn.textContent = "حذف";
-    delBtn.onclick = () => remove(ref(db, "posts/" + postId));
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "delete-btn";
+    deleteBtn.textContent = "حذف";
+    deleteBtn.onclick = () => remove(ref(db, "posts/" + id));
 
     div.appendChild(editBtn);
-    div.appendChild(delBtn);
+    div.appendChild(deleteBtn);
   }
+
+  /* زر اللايك */
+  const likeBtn = div.querySelector(".like-btn");
+  const likesCount = div.querySelector(".likes-count");
+  const postRef = ref(db, "posts/" + id);
+
+  likeBtn.onclick = async () => {
+    const userLikeRef = ref(db, "likes/" + id + "/" + currentUser.phone);
+    const snap = await get(userLikeRef);
+
+    if (snap.exists()) return; // لايك واحد فقط
+
+    await set(userLikeRef, true);
+
+    const p = (await get(postRef)).val();
+    await update(postRef, { likes: (p.likes || 0) + 1 });
+  };
+
+  /* التعليقات */
+  const commentsContainer = div.querySelector(".comments");
+
+  const inputDiv = document.createElement("div");
+  inputDiv.className = "comment-input";
+  inputDiv.innerHTML = `
+    <input type="text" placeholder="أضف تعليقك">
+    <button>نشر</button>
+  `;
+
+  const cInput = inputDiv.querySelector("input");
+  const cBtn = inputDiv.querySelector("button");
+
+  cBtn.onclick = () => {
+    const text = cInput.value.trim();
+    if (!text) return;
+
+    const newCommentRef = push(ref(db, "comments/" + id));
+    set(newCommentRef, {
+      text,
+      authorName: currentUser.name,
+      authorPhone: currentUser.phone,
+      timestamp: Date.now()
+    });
+
+    cInput.value = "";
+  };
+
+  div.appendChild(inputDiv);
+
+  const commentsRef = ref(db, "comments/" + id);
+  onValue(commentsRef, snap => {
+    commentsContainer.innerHTML = "";
+    const data = snap.val();
+    if (!data) return;
+
+    Object.values(data).forEach(c => {
+      const cDiv = document.createElement("div");
+      cDiv.className = "comment";
+      cDiv.innerHTML = `<small>${c.authorName}</small>: ${c.text}`;
+      commentsContainer.appendChild(cDiv);
+    });
+  });
 
   postsContainer.prepend(div);
 }
 
-
-// تحميل كل المنشورات
-onValue(ref(db, "posts"), snapshot => {
+/* ========== جلب المنشورات ========== */
+const postsRef = ref(db, "posts");
+onValue(postsRef, snapshot => {
   postsContainer.innerHTML = "";
   const data = snapshot.val();
   if (!data) return;
