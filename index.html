@@ -3,386 +3,75 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>إنستغرام وهمي</title>
+<title>Zom - تسجيل الدخول</title>
 <style>
-body {
-    margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f0f2f5;
-    color: #333;
-}
-
-header {
-    background: linear-gradient(90deg, #007BFF, #0056b3);
-    color: white;
-    padding: 15px;
-    text-align: center;
-    font-size: 1.5em;
-    font-weight: bold;
-}
-
-main {
-    max-width: 600px;
-    margin: 20px auto;
-    padding: 0 10px;
-}
-
-.login-container, .post-container {
-    background-color: white;
-    padding: 15px;
-    margin-bottom: 20px;
-    border-radius: 15px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-}
-
-input, textarea, button {
-    width: 100%;
-    padding: 10px;
-    margin-top: 10px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 1em;
-    box-sizing: border-box;
-}
-
-button {
-    background: linear-gradient(90deg, #007BFF, #00BFFF);
-    color: white;
-    border: none;
-    cursor: pointer;
-    font-weight: bold;
-    transition: 0.3s;
-}
-
-button:hover {
-    background: linear-gradient(90deg, #0056b3, #0099cc);
-}
-
-.post {
-    background-color: #fff;
-    border-radius: 15px;
-    margin-bottom: 20px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-    position: relative;
-    overflow: hidden;
-}
-
-.post-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 15px;
-    background-color: #007BFF;
-    color: white;
-}
-
-.username {
-    font-weight: bold;
-}
-
-.options {
-    cursor: pointer;
-    font-size: 1.2em;
-    position: relative;
-}
-
-.options-menu {
-    display: none;
-    position: absolute;
-    top: 25px;
-    right: 0;
-    background: white;
-    color: black;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    overflow: hidden;
-    z-index: 10;
-}
-
-.options-menu button {
-    width: 100%;
-    border: none;
-    background: none;
-    padding: 10px 15px;
-    text-align: right;
-    cursor: pointer;
-}
-
-.options-menu button:hover {
-    background-color: #f0f0f0;
-}
-
-.post-content {
-    padding: 15px;
-    font-size: 1em;
-    line-height: 1.5;
-    white-space: pre-wrap;
-}
-
-.post-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 15px;
-    background-color: #007BFF;
-    color: white;
-}
-
-.post-actions {
-    display: flex;
-    gap: 20px;
-    font-size: 1.2em;
-    cursor: pointer;
-    align-items: center;
-}
-
-.post-actions span {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.views {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 0.9em;
-}
-
-/* Modal التعليقات */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 100;
-    left: 0; top: 0;
-    width: 100%; height: 100%;
-    backdrop-filter: blur(5px);
-    background-color: rgba(0,0,0,0.5);
-}
-
-.modal-content {
-    background-color: #fefefe;
-    margin: 50px auto;
-    padding: 0;
-    border-radius: 15px;
-    max-width: 500px;
-    height: 80%;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-
-.modal-header {
-    background-color: #007BFF;
-    color: white;
-    padding: 15px;
-    font-weight: bold;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.close {
-    font-size: 1.5em;
-    cursor: pointer;
-}
-
-.modal-body {
-    flex: 1;
-    padding: 15px;
-    overflow-y: auto;
-    background-color: #f8f9fa;
-}
-
-.comment {
-    border-bottom: 1px solid #ddd;
-    padding: 8px 0;
-}
-
-.comment strong {
-    margin-right: 5px;
-}
-
-.modal-footer {
-    padding: 10px 15px;
-    display: flex;
-    gap: 10px;
-    border-top: 1px solid #ccc;
-}
-
-.modal-footer input {
-    flex: 1;
-    border-radius: 20px;
-    padding: 10px 15px;
-    border: 1px solid #ccc;
-}
-
-.modal-footer button {
-    border-radius: 20px;
-    padding: 10px 20px;
-}
+body { font-family: Arial; display:flex; justify-content:center; align-items:center; height:100vh; background:#f0f0f0; }
+.container { background:#fff; padding:20px; border-radius:10px; box-shadow:0 3px 10px rgba(0,0,0,0.2); width:300px; }
+h2 { text-align:center; }
+input { width:100%; padding:10px; margin:5px 0; border-radius:5px; border:1px solid #ccc; }
+button { width:100%; padding:10px; margin-top:10px; border:none; border-radius:5px; background:#000; color:#fff; cursor:pointer; }
+button:hover { background:#333; }
+p { text-align:center; margin-top:10px; }
+p span { color:blue; cursor:pointer; }
 </style>
 </head>
 <body>
 
-<header>صفحة المنشورات مثل إنستغرام</header>
-
-<main>
-    <div class="login-container" id="login-container">
-        <h3>تسجيل الدخول باسم المستخدم</h3>
-        <input type="text" id="username" placeholder="أدخل اسم المستخدم">
-        <button id="loginBtn">دخول</button>
-    </div>
-
-    <div class="post-container" id="create-post-container" style="display:none;">
-        <textarea id="post-content" placeholder="اكتب منشورك هنا..."></textarea>
-        <button id="createPostBtn">نشر</button>
-    </div>
-
-    <div id="posts-container"></div>
-</main>
-
-<!-- Modal التعليقات -->
-<div id="commentModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            التعليقات
-            <span class="close" id="closeModal">&times;</span>
-        </div>
-        <div class="modal-body" id="modal-comments"></div>
-        <div class="modal-footer">
-            <input type="text" id="modal-comment-input" placeholder="أضف تعليق...">
-            <button id="modal-comment-btn">تعليق</button>
-        </div>
-    </div>
+<div class="container" id="authContainer">
+  <h2>تسجيل الدخول</h2>
+  <input type="text" id="phoneInput" placeholder="رقم الهاتف">
+  <input type="password" id="passwordInput" placeholder="كلمة المرور">
+  <button id="loginBtn">تسجيل الدخول</button>
+  <p>ليس لديك حساب؟ <span id="showRegister">إنشاء حساب</span></p>
 </div>
 
-<script>
-let currentUser = "";
-const posts = [];
-let currentCommentPostId = null;
+<div class="container" id="registerContainer" style="display:none;">
+  <h2>إنشاء حساب</h2>
+  <input type="text" id="regName" placeholder="الاسم">
+  <input type="text" id="regPhone" placeholder="رقم الهاتف">
+  <input type="password" id="regPassword" placeholder="كلمة المرور">
+  <button id="registerBtn">إنشاء حساب</button>
+  <p>لديك حساب؟ <span id="showLogin">تسجيل الدخول</span></p>
+</div>
 
-// تسجيل الدخول
-document.getElementById('loginBtn').addEventListener('click', () => {
-    const usernameInput = document.getElementById('username').value.trim();
-    if (!usernameInput) { alert("يرجى إدخال اسم المستخدم"); return; }
-    currentUser = usernameInput;
-    document.getElementById('login-container').style.display = 'none';
-    document.getElementById('create-post-container').style.display = 'block';
-    renderPosts();
-});
+<script type="module">
+import { db } from './firebase-config.js';
+import { ref, get, set } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
 
-// إنشاء منشور
-document.getElementById('createPostBtn').addEventListener('click', () => {
-    const content = document.getElementById('post-content').value.trim();
-    if (!content) return alert("المنشور فارغ");
-    const post = { id: Date.now(), user: currentUser, content, likes: 0, comments: [], views: 0 };
-    posts.unshift(post);
-    document.getElementById('post-content').value = '';
-    renderPosts();
-});
+const authContainer = document.getElementById("authContainer");
+const registerContainer = document.getElementById("registerContainer");
+document.getElementById("showRegister").onclick = () => { authContainer.style.display='none'; registerContainer.style.display='block'; }
+document.getElementById("showLogin").onclick = () => { authContainer.style.display='block'; registerContainer.style.display='none'; }
 
-// عرض المنشورات
-function renderPosts() {
-    const container = document.getElementById('posts-container');
-    container.innerHTML = '';
-    posts.forEach(post => {
-        post.views++;
-        const postDiv = document.createElement('div');
-        postDiv.className = 'post';
-        postDiv.innerHTML = `
-            <div class="post-header">
-                <div class="username">${post.user}</div>
-                <div class="options" onclick="toggleMenu(${post.id})">⋮
-                    <div class="options-menu" id="menu-${post.id}">
-                        <button onclick="editPost(${post.id})">تعديل</button>
-                        <button onclick="deletePost(${post.id})">حذف</button>
-                    </div>
-                </div>
-            </div>
-            <div class="post-content">${post.content}</div>
-            <div class="post-footer">
-                <div class="post-actions">
-                    <span onclick="toggleLike(${post.id})">❤️ ${post.likes}</span>
-                    <span onclick="openComments(${post.id})">💬 تعليق</span>
-                    <span onclick="sharePost(${post.id})">🔗 مشاركة</span>
-                </div>
-                <div class="views">👁 ${post.views}</div>
-            </div>
-        `;
-        container.appendChild(postDiv);
-    });
-}
+document.getElementById("registerBtn").onclick = async () => {
+  const name = document.getElementById("regName").value.trim();
+  const phone = document.getElementById("regPhone").value.trim();
+  const password = document.getElementById("regPassword").value.trim();
+  if(!name || !phone || !password) return alert("املأ كل الحقول");
 
-// خيارات المنشور
-function toggleMenu(postId) {
-    const menu = document.getElementById(`menu-${postId}`);
-    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-}
+  const userRef = ref(db, 'users/' + phone);
+  const snapshot = await get(userRef);
+  if(snapshot.exists()) return alert("رقم الهاتف مستخدم بالفعل");
 
-function editPost(postId) {
-    const post = posts.find(p => p.id === postId);
-    const newContent = prompt("تعديل المنشور:", post.content);
-    if (newContent !== null) {
-        post.content = newContent;
-        renderPosts();
-    }
-}
+  await set(userRef, { name, phone, password });
+  localStorage.setItem("currentUser", phone);
+  window.location.href = "posts.html";
+};
 
-function deletePost(postId) {
-    const index = posts.findIndex(p => p.id === postId);
-    if (index !== -1) {
-        posts.splice(index, 1);
-        renderPosts();
-    }
-}
+document.getElementById("loginBtn").onclick = async () => {
+  const phone = document.getElementById("phoneInput").value.trim();
+  const password = document.getElementById("passwordInput").value.trim();
+  if(!phone || !password) return alert("املأ كل الحقول");
 
-function toggleLike(postId) {
-    const post = posts.find(p => p.id === postId);
-    post.likes++;
-    renderPosts();
-}
+  const userRef = ref(db, 'users/' + phone);
+  const snapshot = await get(userRef);
+  if(!snapshot.exists()) return alert("الحساب غير موجود");
+  const userData = snapshot.val();
+  if(userData.password !== password) return alert("كلمة المرور خاطئة");
 
-function sharePost(postId) {
-    alert("رابط المشاركة جاهز! (محاكاة)");
-}
-
-// فتح نافذة التعليقات
-function openComments(postId) {
-    currentCommentPostId = postId;
-    updateModalComments();
-    document.getElementById('commentModal').style.display = 'block';
-}
-
-function updateModalComments() {
-    const post = posts.find(p => p.id === currentCommentPostId);
-    const modalComments = document.getElementById('modal-comments');
-    modalComments.innerHTML = post.comments.map(c => `<div class="comment"><strong>${c.user}:</strong> ${c.text}</div>`).join('');
-}
-
-// إضافة تعليق من نافذة Modal
-document.getElementById('modal-comment-btn').addEventListener('click', () => {
-    const input = document.getElementById('modal-comment-input');
-    const text = input.value.trim();
-    if (!text) return;
-    const post = posts.find(p => p.id === currentCommentPostId);
-    post.comments.push({user: currentUser, text});
-    input.value = '';
-    updateModalComments();
-    renderPosts();
-});
-
-// إغلاق نافذة Modal
-document.getElementById('closeModal').addEventListener('click', () => {
-    document.getElementById('commentModal').style.display = 'none';
-});
-
-window.onclick = function(event) {
-    if (event.target == document.getElementById('commentModal')) {
-        document.getElementById('commentModal').style.display = 'none';
-    }
-}
+  localStorage.setItem("currentUser", phone);
+  window.location.href = "posts.html";
+};
 </script>
-
 </body>
 </html>
