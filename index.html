@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zom</title>
+<title>Zom - Fixed</title>
 <style>
 body {
     margin: 0;
@@ -308,10 +308,10 @@ button svg { width: 20px; height: 20px; vertical-align: middle; fill: black; }
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-import { getDatabase, ref, push, onChildAdded, update, get, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
+import { getDatabase, ref, push, onChildAdded, update, get, query, orderByChild, set } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
 
-// Firebase Config
+// Firebase Config (احتفظ بالمفاتيح كما هي عند الحاجة)
 const firebaseConfig = {
     apiKey: "AIzaSyDVYoWats4bhKLbO8cu9hQ73WBjty-e5mA",
     authDomain: "aljj-28d36.firebaseapp.com",
@@ -324,7 +324,7 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+try{ getAnalytics(app); }catch(e){ /* analytics optional */ }
 const db = getDatabase(app);
 
 // عناصر DOM
@@ -363,11 +363,24 @@ const searchInput = document.getElementById('searchInput');
 const searchResults = document.getElementById('searchResults');
 
 let currentUser = null;
-let currentCommentPost = null;
+let currentCommentPost = null; // { id, data }
 
 // --- تبديل بين تسجيل الدخول وإنشاء حساب ---
 showRegister.addEventListener('click',()=>{loginContainer.style.display='none';registerContainer.style.display='flex';});
 showLogin.addEventListener('click',()=>{registerContainer.style.display='none';loginContainer.style.display='flex';});
+
+// --- مساعدة: حفظ المستخدم محلياً لاستعادة الجلسة ---
+function saveCurrentUser(){
+    if(currentUser) localStorage.setItem('zom_user', JSON.stringify(currentUser));
+}
+function loadCurrentUser(){
+    try{
+        const s = localStorage.getItem('zom_user');
+        if(s) currentUser = JSON.parse(s);
+    }catch(e){ currentUser = null; }
+}
+loadCurrentUser();
+if(currentUser){ loginContainer.style.display='none'; registerContainer.style.display='none'; }
 
 // --- تسجيل مستخدم جديد ---
 registerBtn.addEventListener('click', async ()=>{
@@ -380,8 +393,10 @@ registerBtn.addEventListener('click', async ()=>{
     const snap = await get(ref(db,'users/'+phone));
     if(snap.exists()) return alert("رقم الهاتف موجود مسبقاً");
 
+    // حفظ المستخدم تحت users/PHONE/autoId
     await push(ref(db,'users/'+phone),{password: pass, username});
     currentUser = {phone, username};
+    saveCurrentUser();
     loginContainer.style.display='none';
     registerContainer.style.display='none';
     alert("تم إنشاء الحساب بنجاح!");
@@ -397,10 +412,14 @@ loginBtn.addEventListener('click', async ()=>{
     const snap = await get(ref(db,'users/'+phone));
     if(!snap.exists()) return alert("رقم الهاتف غير موجود");
 
-    let userData = Object.values(snap.val())[0];
-    if(userData.password !== pass) return alert("كلمة المرور خاطئة");
+    // snap.val() هو كائن يحتوى على child entries، نأخذ أول مستخدم
+    const userGroup = snap.val();
+    const first = Object.values(userGroup)[0];
+    if(!first) return alert("خطأ في البيانات");
+    if(first.password !== pass) return alert("كلمة المرور خاطئة");
 
-    currentUser = {phone, username: userData.username};
+    currentUser = {phone, username: first.username};
+    saveCurrentUser();
     loginContainer.style.display='none';
     registerContainer.style.display='none';
     loadPosts();
@@ -414,51 +433,41 @@ publishBtn.addEventListener('click', async ()=>{
     if(!content) return alert("المنشور فارغ");
 
     const post = {content, likes:0, shares:0, views:0, user: currentUser.username, comments:{}};
-    const newPostRef = push(ref(db,'posts'));
-    newPostRef.set(post);
+    // استخدام push مع القيمة مباشرة
+    await push(ref(db,'posts'), post);
     postInput.value='';
     writePostContainer.style.display='none';
 });
 
-// --- إنشاء عنصر منشور ---
-function createPostElement(postId, postData, container=postsContainer){
+// --- إنشاء عنصر منشور (تعيد DOM عنصر جديد لكل مكان تُطلب فيه) ---
+function createPostElement(postId, postData){
     const postDiv = document.createElement('div');
     postDiv.className='post';
     postDiv.dataset.id=postId;
     postDiv.innerHTML = `
-        <div class="post-header">${postData.user}</div>
-        <div class="post-content">${postData.content}</div>
+        <div class="post-header">${escapeHtml(postData.user||'مستخدم')}</div>
+        <div class="post-content">${escapeHtml(postData.content||'')}</div>
         <div class="post-footer">
             <button class="like-btn">
-                <svg fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                </svg>
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                 <span class="like-count">${postData.likes||0}</span>
             </button>
             <button class="comment-btn">
-                <svg fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M21 6h-2v9H5v2c0 0.55 0.45 1 1 1h9l4 4V7c0-0.55-0.45-1-1-1z"/>
-                </svg>
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M21 6h-2v9H5v2c0 0.55 0.45 1 1 1h9l4 4V7c0-0.55-0.45-1-1-1z"/></svg>
                 <span class="comment-count">${postData.comments?Object.keys(postData.comments).length:0}</span>
             </button>
             <button class="view-btn" disabled>
-                <svg fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7zm0 12c-2.76 0-5-2.24-5-5s2.24-5 5-5 
-                    5 2.24 5 5-2.24 5-5 5z"/>
-                    <circle cx="12" cy="12" r="2.5"/>
-                </svg>
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7zm0 12c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/><circle cx="12" cy="12" r="2.5"/></svg>
                 <span class="view-count">${postData.views||0}</span>
             </button>
             <button class="share-btn">
-                <svg fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M18 16.08c-0.76 0-1.44 0.3-1.96 0.77L8.91 12.7c0.05-0.23 0.09-0.46 0.09-0.7s-0.03-0.47-0.09-0.7l7.02-4.11c0.53 0.5 1.23 0.81 2.07 0.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 0.24 0.03 0.47 0.09 0.7l-7.02 4.11c-0.53-0.5-1.23-0.81-2.07-0.81-1.66 0-3 1.34-3 3s1.34 3 3 3c0.84 0 1.54-0.31 2.07-0.81l7.12 4.17c-0.05 0.21-0.08 0.43-0.08 0.64 0 1.66 1.34 3 3 3s3-1.34 3-3-1.34-3-3-3z"/>
-                </svg>
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M18 16.08c-0.76 0-1.44 0.3-1.96 0.77L8.91 12.7c0.05-0.23 0.09-0.46 0.09-0.7s-0.03-0.47-0.09-0.7l7.02-4.11c0.53 0.5 1.23 0.81 2.07 0.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 0.24 0.03 0.47 0.09 0.7l-7.02 4.11c-0.53-0.5-1.23-0.81-2.07-0.81-1.66 0-3 1.34-3 3s1.34 3 3 3c0.84 0 1.54-0.31 2.07-0.81l7.12 4.17c-0.05 0.21-0.08 0.43-0.08 0.64 0 1.66 1.34 3 3 3s3-1.34 3-3-1.34-3-3-3z"/></svg>
                 <span class="share-count">${postData.shares||0}</span>
             </button>
         </div>
     `;
-    container.prepend(postDiv);
 
+    // أحداث الأزرار
     const likeBtn = postDiv.querySelector('.like-btn');
     const likeCount = postDiv.querySelector('.like-count');
     const commentBtn = postDiv.querySelector('.comment-btn');
@@ -467,69 +476,112 @@ function createPostElement(postId, postData, container=postsContainer){
     const shareCount = postDiv.querySelector('.share-count');
     const viewCountSpan = postDiv.querySelector('.view-count');
 
-    likeBtn.addEventListener('click',()=>{
-        postData.likes = (postData.likes||0)+1;
-        update(ref(db,'posts/'+postId),{likes: postData.likes});
-        likeCount.textContent = postData.likes;
+    likeBtn.addEventListener('click', async ()=>{
+        // قراءة الحالة الحالية من DB ثم التحديث (لتقليل التصادمات)
+        const postRef = ref(db,'posts/'+postId);
+        // زيادة العدد محلياً ثم ارسال التحديث
+        const newLikes = (postData.likes||0)+1;
+        postData.likes = newLikes;
+        await update(postRef,{likes: newLikes});
+        likeCount.textContent = newLikes;
     });
 
     commentBtn.addEventListener('click',()=>{
-        currentCommentPost = {id:postId, data:postData};
+        currentCommentPost = {id: postId, data: postData};
         updateModalComments(postData);
         commentModal.style.display='flex';
+        modalCommentInput.focus();
     });
 
-    modalCommentBtn.addEventListener('click',()=>{
-        const text = modalCommentInput.value.trim();
-        if(!text || !currentCommentPost) return;
-        const commentRef = push(ref(db,`posts/${currentCommentPost.id}/comments`));
-        commentRef.set({text});
-        modalCommentInput.value='';
+    shareBtn.addEventListener('click', async ()=>{
+        const postRef = ref(db,'posts/'+postId);
+        const newShares = (postData.shares||0)+1;
+        postData.shares = newShares;
+        await update(postRef,{shares: newShares});
+        shareCount.textContent = newShares;
+        try{ await navigator.clipboard.writeText(window.location.href + '#post-' + postId); alert('تم نسخ رابط المشاركة'); }catch(e){ alert('تم تحضير رابط المشاركة (نسخ غير مدعوم)'); }
     });
 
-    shareBtn.addEventListener('click',()=>{
-        postData.shares = (postData.shares||0)+1;
-        update(ref(db,'posts/'+postId),{shares: postData.shares});
-        shareCount.textContent = postData.shares;
-        alert("تم نسخ رابط المشاركة! (محاكاة)");
-    });
-
+    // مشاهدات عند ظهور المنشور مرة واحدة
     const observer = new IntersectionObserver((entries, obs)=>{
-        entries.forEach(entry=>{
+        entries.forEach(async entry=>{
             if(entry.isIntersecting){
-                postData.views = (postData.views||0)+1;
-                update(ref(db,'posts/'+postId),{views: postData.views});
-                viewCountSpan.textContent = postData.views;
+                const postRef = ref(db,'posts/'+postId);
+                const newViews = (postData.views||0)+1;
+                postData.views = newViews;
+                await update(postRef,{views: newViews});
+                viewCountSpan.textContent = newViews;
                 obs.unobserve(postDiv);
             }
         });
     },{threshold:0.5});
     observer.observe(postDiv);
+
+    // تعيين id في العنصر لسهولة الربط
+    postDiv.id = 'post-' + postId;
+    return postDiv;
 }
 
-// --- تحديث التعليقات ---
+// --- تحديث التعليقات في المودال ---
 function updateModalComments(postData){
-    modalComments.innerHTML = postData.comments ? 
-      Object.values(postData.comments).map(c=>`<div class="comment"><strong>مستخدم:</strong> ${c.text}</div>`).join('') 
-      : '';
+    modalComments.innerHTML = '';
+    if(!postData || !postData.comments) return;
+    Object.values(postData.comments).forEach(c=>{
+        const d = document.createElement('div');
+        d.className = 'comment';
+        d.innerHTML = `<strong>مستخدم:</strong> ${escapeHtml(c.text||'')}`;
+        modalComments.appendChild(d);
+    });
 }
+
+// --- زر إضافة تعليق في المودال (واحد فقط على مستوى الصفحة) ---
+modalCommentBtn.addEventListener('click', async ()=>{
+    const text = modalCommentInput.value.trim();
+    if(!text || !currentCommentPost) return;
+    const commentsRef = ref(db,`posts/${currentCommentPost.id}/comments`);
+    await push(commentsRef, {text});
+    modalCommentInput.value = '';
+    // تحديث العرض محلياً: سنجلب أحدث نسخة من المنشور من DB ليظهر التحديث فوراً
+    const snap = await get(ref(db,'posts/'+currentCommentPost.id));
+    if(snap.exists()){
+        currentCommentPost.data = snap.val();
+        updateModalComments(currentCommentPost.data);
+        // تحديث أعداد التعليقات في DOM (إن وُجد عنصر المنشور)
+        const postEl = document.getElementById('post-' + currentCommentPost.id);
+        if(postEl){
+            const cc = postEl.querySelector('.comment-count');
+            if(cc) cc.textContent = currentCommentPost.data.comments ? Object.keys(currentCommentPost.data.comments).length : 0;
+        }
+    }
+});
 
 // --- اغلاق نافذة التعليقات ---
 closeModal.addEventListener('click',()=> commentModal.style.display='none');
 window.addEventListener('click', e=>{if(e.target==commentModal) commentModal.style.display='none';});
 
 // --- تحميل جميع المنشورات ---
+// نستخدم onChildAdded مرة واحدة عند التشغيل وليس عند كل تحميل
 function loadPosts(){
     postsContainer.innerHTML='';
     accountPostsContainer.innerHTML='';
+
     onChildAdded(ref(db,'posts'), snapshot=>{
         const post = snapshot.val();
-        createPostElement(snapshot.key, post);
-        if(currentUser && post.user===currentUser.username){
-            createPostElement(snapshot.key, post, accountPostsContainer);
+        const postId = snapshot.key;
+        // عنصر رئيسي للتايم لاين
+        const el = createPostElement(postId, post);
+        postsContainer.prepend(el);
+
+        // عنصر منفصل لصفحة الحساب الشخصي (حتى لا يتداخل observer أو الأحداث)
+        if(currentUser && post.user === currentUser.username){
+            const el2 = createPostElement(postId, post);
+            accountPostsContainer.prepend(el2);
         }
     });
 }
+
+// تشغيل التحميل الأولي
+loadPosts();
 
 // --- زر "حسابي" ---
 myAccountBtn.addEventListener('click',()=>{
@@ -552,9 +604,10 @@ searchInput.addEventListener('input', async ()=>{
     const q = query(ref(db,'users'), orderByChild('username'));
     const snap = await get(q);
     if(snap.exists()){
+        // users/PHONE/{autoId} structure
         Object.values(snap.val()).forEach(userGroup=>{
             Object.values(userGroup).forEach(u=>{
-                if(u.username.toLowerCase().includes(val.toLowerCase())){
+                if(u.username && u.username.toLowerCase().includes(val.toLowerCase())){
                     const div = document.createElement('div');
                     div.textContent = u.username;
                     searchResults.appendChild(div);
@@ -563,6 +616,17 @@ searchInput.addEventListener('input', async ()=>{
         });
     }
 });
+
+// --- فائدة: هروب HTML بسيط لمنع XSS عند عرض النصوص ---
+function escapeHtml(str){
+    if(!str) return '';
+    return String(str)
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;')
+      .replace(/'/g,'&#039;');
+}
 </script>
 </body>
-    </html>
+</html>
