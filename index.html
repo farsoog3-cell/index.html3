@@ -5,305 +5,93 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Zom</title>
 <style>
-body {
-    margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(to bottom, #ffffff, #e0e0e0);
-    color: #000;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-}
-header {
-    background: #fff;
-    color: #000;
-    padding: 15px;
-    text-align: center;
-    font-size: 1.5em;
-    font-weight: bold;
-}
-main {
-    flex: 1;
-    overflow-y: auto;
-    padding: 10px;
-}
-.post {
-    background-color: #fff;
-    border-radius: 15px;
-    margin-bottom: 15px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-    border: 2px solid #000;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    height: 200px;
-}
-.post-header {
-    font-weight: bold;
-    padding: 10px;
-    border-bottom: 1px solid #ccc;
-    flex-shrink: 0;
-}
-.post-content {
-    padding: 10px;
-    overflow-y: auto;
-    flex: 1;
-}
-.post-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    background-color: rgba(0,0,0,0.05);
-    flex-shrink: 0;
-}
-.post-footer button {
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 1em;
-    transition: 0.2s;
-    color: black;
-}
-.post-footer button:hover { transform: scale(1.1); }
-.post-footer button.like.active { color: #000; }
-
-/* كتابة منشور */
-#writePostContainer {
-    position: fixed;
-    bottom: 90px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 90%;
-    background: #fff;
-    padding: 10px 15px;
-    box-shadow: 0 -3px 10px rgba(0,0,0,0.2);
-    border-radius: 15px;
-    display: none;
-    gap: 10px;
-    z-index: 100;
-    border: 2px solid #000;
-}
-#writePostContainer textarea {
-    flex: 1;
-    height: 40px;
-    padding: 10px 12px;
-    border-radius: 12px;
-    border: 1px solid #ccc;
-    resize: none;
-    font-size: 1em;
-    outline: none;
-}
-#writePostContainer button {
-    padding: 8px 15px;
-    border: none;
-    border-radius: 12px;
-    background-color: #000;
-    color: #fff;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 0.9em;
-    transition: 0.2s;
-}
-#writePostContainer button:hover { transform: scale(1.05); }
-
-/* أزرار القاع */
-#topButtonsContainer {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 15px;
-    padding: 10px;
-    border: 2px solid #000;
-    border-radius: 30px;
-    background-color: #fff;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.2);
-    z-index: 100;
-}
-.button-wrapper button {
-    width: 100px;
-    height: 50px;
-    border: 2px solid #000;
-    border-radius: 25px;
-    background-color: #fff;
-    color: #000;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.2s;
-}
-.button-wrapper button:hover { background-color: #000; color: #fff; transform: scale(1.05); }
-
-/* نموذج التعليقات */
-#commentModal {
-    display: none;
-    position: fixed;
-    z-index: 200;
-    left: 0; top: 0;
-    width: 100%; height: 100%;
-    backdrop-filter: blur(8px);
-    background-color: rgba(0, 0, 0, 0.2);
-    justify-content: center;
-    align-items: center;
-}
-#commentModal .modal-content {
-    background-color: rgba(255, 255, 255, 0.95);
-    color: black;
-    padding: 0;
-    border-radius: 20px;
-    max-width: 500px;
-    width: 90%;
-    height: 60%;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-}
-.modal-header {
-    padding: 15px;
-    font-weight: bold;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: rgba(255,255,255,1);
-    border-bottom: 1px solid rgba(0,0,0,0.2);
-    color: black;
-}
-.close { font-size: 1.5em; cursor: pointer; color: black; }
-.modal-body {
-    flex: 1;
-    padding: 15px;
-    overflow-y: auto;
-    background-color: rgba(255,255,255,0.9);
-    color: black;
-}
-.comment { border-bottom: 1px solid rgba(0,0,0,0.1); padding: 8px 0; }
-.comment strong { margin-right: 5px; color: black; }
-.modal-footer {
-    padding: 10px 15px;
-    display: flex;
-    gap: 10px;
-    border-top: 1px solid rgba(0,0,0,0.2);
-    background-color: rgba(255,255,255,0.95);
-}
-.modal-footer input {
-    flex: 1;
-    border-radius: 20px;
-    padding: 10px 15px;
-    border: 1px solid rgba(0,0,0,0.2);
-    background-color: rgba(255,255,255,0.8);
-    color: black;
-}
-.modal-footer input::placeholder { color: rgba(0,0,0,0.5); }
-.modal-footer button {
-    border-radius: 20px;
-    padding: 10px 20px;
-    background-color: black;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    border: none;
-}
-button svg { width: 20px; height: 20px; vertical-align: middle; fill: black; }
-
-/* صفحة تسجيل الدخول */
-#loginContainer, #registerContainer {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(255,255,255,0.95);
-    display: flex; justify-content: center; align-items: center;
-    flex-direction: column;
-    z-index: 300;
-}
-#loginContainer input, #registerContainer input {
-    padding: 10px 15px; margin: 5px 0; border-radius: 12px; border: 1px solid #ccc; width: 250px;
-}
-#loginContainer button, #registerContainer button {
-    padding: 10px 20px; margin-top: 10px; border-radius: 12px; border: none; background-color: black; color: white; cursor: pointer;
-}
-#loginContainer button:hover, #registerContainer button:hover { transform: scale(1.05); }
-
-/* صفحة الحساب */
-#accountPage {
-    display: none;
-    flex-direction: column;
-}
-#accountPage h2 { text-align: center; }
-#accountPostsContainer .post { height: 150px; }
-#searchContainer {
-    display: none; flex-direction: column; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); z-index: 400; padding: 20px;
-}
-#searchContainer input { padding: 10px 15px; border-radius: 12px; border: 1px solid #ccc; width: 100%; margin-bottom: 10px; }
-#searchResults .post { height: 150px; }
+body {margin:0;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#f0f0f0;color:#000;display:flex;flex-direction:column;height:100vh;}
+header {background:#fff;color:#000;padding:15px;text-align:center;font-size:1.5em;font-weight:bold;}
+main {flex:1;overflow-y:auto;padding:10px;}
+.post {background-color:#fff;border-radius:15px;margin-bottom:15px;box-shadow:0 3px 10px rgba(0,0,0,0.2);border:2px solid #000;display:flex;flex-direction:column;overflow:hidden;}
+.post-header {font-weight:bold;padding:10px;border-bottom:1px solid #ccc;}
+.post-content {padding:10px;overflow-y:auto;flex:1;}
+.post-footer {display:flex;justify-content:space-between;align-items:center;padding:10px;background-color:rgba(0,0,0,0.05);}
+.post-footer button {border:none;background:transparent;cursor:pointer;display:flex;align-items:center;gap:5px;font-size:1em;transition:0.2s;color:black;}
+.post-footer button:hover{transform:scale(1.1);}
+#writePostContainer{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);width:90%;background:#fff;padding:10px 15px;box-shadow:0 -3px 10px rgba(0,0,0,0.2);border-radius:15px;display:none;gap:10px;z-index:100;border:2px solid #000;}
+#writePostContainer textarea{flex:1;height:40px;padding:10px 12px;border-radius:12px;border:1px solid #ccc;resize:none;font-size:1em;outline:none;}
+#writePostContainer button{padding:8px 15px;border:none;border-radius:12px;background-color:#000;color:#fff;font-weight:bold;cursor:pointer;font-size:0.9em;transition:0.2s;}
+#writePostContainer button:hover{transform:scale(1.05);}
+#topButtonsContainer{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:15px;padding:10px;border:2px solid #000;border-radius:30px;background-color:#fff;box-shadow:0 3px 6px rgba(0,0,0,0.2);z-index:100;}
+.button-wrapper button{width:100px;height:50px;border:2px solid #000;border-radius:25px;background-color:#fff;color:#000;font-weight:bold;cursor:pointer;transition:0.2s;}
+.button-wrapper button:hover{background-color:#000;color:#fff;transform:scale(1.05);}
+#commentModal{display:none;position:fixed;z-index:200;left:0;top:0;width:100%;height:100%;backdrop-filter:blur(8px);background-color:rgba(0,0,0,0.2);justify-content:center;align-items:center;}
+#commentModal .modal-content{background-color:rgba(255,255,255,0.95);color:black;padding:0;border-radius:20px;max-width:500px;width:90%;height:60%;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 8px 25px rgba(0,0,0,0.2);}
+.modal-header{padding:15px;font-weight:bold;display:flex;justify-content:space-between;align-items:center;background-color:rgba(255,255,255,1);border-bottom:1px solid rgba(0,0,0,0.2);}
+.close{font-size:1.5em;cursor:pointer;color:black;}
+.modal-body{flex:1;padding:15px;overflow-y:auto;background-color:rgba(255,255,255,0.9);color:black;}
+.comment{border-bottom:1px solid rgba(0,0,0,0.1);padding:8px 0;}
+.comment strong{margin-right:5px;color:black;}
+.modal-footer{padding:10px 15px;display:flex;gap:10px;border-top:1px solid rgba(0,0,0,0.2);background-color:rgba(255,255,255,0.95);}
+.modal-footer input{flex:1;border-radius:20px;padding:10px 15px;border:1px solid rgba(0,0,0,0.2);background-color:rgba(255,255,255,0.8);color:black;}
+.modal-footer input::placeholder{color:rgba(0,0,0,0.5);}
+.modal-footer button{border-radius:20px;padding:10px 20px;background-color:black;color:white;font-weight:bold;cursor:pointer;border:none;}
+button svg{width:20px;height:20px;vertical-align:middle;fill:black;}
+#loginContainer,#registerContainer,#accountPage,#searchContainer{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.95);display:flex;justify-content:center;align-items:center;flex-direction:column;z-index:300;overflow-y:auto;}
+#loginContainer input,#registerContainer input,#searchContainer input{padding:10px 15px;margin:5px 0;border-radius:12px;border:1px solid #ccc;width:250px;}
+#loginContainer button,#registerContainer button{padding:10px 20px;margin-top:10px;border-radius:12px;border:none;background-color:black;color:white;cursor:pointer;}
+#loginContainer button:hover,#registerContainer button:hover{transform:scale(1.05);}
+#accountPostsContainer,#searchResults{width:90%;max-width:500px;}
 </style>
 </head>
 <body>
 
 <header>Zom</header>
-
 <main id="postsContainer"></main>
 
-<!-- كتابة منشور -->
 <div id="writePostContainer">
-    <textarea id="postInput" placeholder="اكتب منشورك هنا..."></textarea>
-    <button id="publishBtn">نشر</button>
+<textarea id="postInput" placeholder="اكتب منشورك هنا..."></textarea>
+<button id="publishBtn">نشر</button>
 </div>
 
-<!-- أزرار القاع -->
 <div id="topButtonsContainer">
-    <div class="button-wrapper"><button id="newPostBtn">منشور جديد</button></div>
-    <div class="button-wrapper"><button id="myAccountBtn">حسابي</button></div>
-    <div class="button-wrapper"><button id="searchBtn">بحث</button></div>
+<div class="button-wrapper"><button id="newPostBtn">منشور جديد</button></div>
+<div class="button-wrapper"><button id="myAccountBtn">حسابي</button></div>
+<div class="button-wrapper"><button id="searchBtn">بحث</button></div>
 </div>
 
-<!-- التعليقات -->
 <div id="commentModal">
-    <div class="modal-content">
-        <div class="modal-header">
-            التعليقات
-            <span class="close" id="closeModal">&times;</span>
-        </div>
-        <div class="modal-body" id="modal-comments"></div>
-        <div class="modal-footer">
-            <input type="text" id="modal-comment-input" placeholder="أضف تعليق...">
-            <button id="modal-comment-btn">تعليق</button>
-        </div>
-    </div>
+<div class="modal-content">
+<div class="modal-header">التعليقات <span class="close" id="closeModal">&times;</span></div>
+<div class="modal-body" id="modal-comments"></div>
+<div class="modal-footer">
+<input type="text" id="modal-comment-input" placeholder="أضف تعليق...">
+<button id="modal-comment-btn">تعليق</button>
+</div>
+</div>
 </div>
 
-<!-- تسجيل الدخول -->
 <div id="loginContainer">
-    <h2>تسجيل الدخول</h2>
-    <input type="text" id="loginPhone" placeholder="رقم الهاتف">
-    <input type="password" id="loginPassword" placeholder="كلمة المرور">
-    <button id="loginBtn">دخول</button>
-    <p>ليس لديك حساب؟ <span id="showRegister" style="color:blue;cursor:pointer">إنشاء حساب</span></p>
+<h2>تسجيل الدخول</h2>
+<input type="text" id="loginPhone" placeholder="رقم الهاتف">
+<input type="password" id="loginPassword" placeholder="كلمة المرور">
+<button id="loginBtn">دخول</button>
+<p>ليس لديك حساب؟ <span id="showRegister" style="color:blue;cursor:pointer">إنشاء حساب</span></p>
 </div>
 
-<!-- إنشاء حساب -->
 <div id="registerContainer" style="display:none;">
-    <h2>إنشاء حساب</h2>
-    <input type="text" id="registerPhone" placeholder="رقم الهاتف">
-    <input type="password" id="registerPassword" placeholder="كلمة المرور">
-    <input type="text" id="registerUsername" placeholder="اسم المستخدم">
-    <button id="registerBtn">إنشاء حساب</button>
-    <p>لديك حساب؟ <span id="showLogin" style="color:blue;cursor:pointer">تسجيل الدخول</span></p>
+<h2>إنشاء حساب</h2>
+<input type="text" id="registerPhone" placeholder="رقم الهاتف">
+<input type="password" id="registerPassword" placeholder="كلمة المرور">
+<input type="text" id="registerUsername" placeholder="اسم المستخدم">
+<button id="registerBtn">إنشاء حساب</button>
+<p>لديك حساب؟ <span id="showLogin" style="color:blue;cursor:pointer">تسجيل الدخول</span></p>
 </div>
 
-<!-- صفحة حسابي -->
 <div id="accountPage">
-    <h2>حسابي</h2>
-    <div id="accountPostsContainer"></div>
+<h2>حسابي</h2>
+<div id="accountPostsContainer"></div>
 </div>
 
-<!-- صفحة البحث -->
 <div id="searchContainer">
-    <input type="text" id="searchInput" placeholder="ابحث عن اسم المستخدم">
-    <div id="searchResults"></div>
+<input type="text" id="searchInput" placeholder="ابحث عن اسم المستخدم">
+<div id="searchResults"></div>
 </div>
 
 <script type="module">
@@ -311,258 +99,207 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebas
 import { getDatabase, ref, push, onChildAdded, update, get, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
 
-// Firebase Config
 const firebaseConfig = {
-    apiKey: "AIzaSyDVYoWats4bhKLbO8cu9hQ73WBjty-e5mA",
-    authDomain: "aljj-28d36.firebaseapp.com",
-    databaseURL: "https://aljj-28d36-default-rtdb.firebaseio.com",
-    projectId: "aljj-28d36",
-    storageBucket: "aljj-28d36.firebasestorage.app",
-    messagingSenderId: "256012982420",
-    appId: "1:256012982420:web:3a1541af04b99d658e7c81",
-    measurementId: "G-43WH1GKJFC"
+apiKey:"AIzaSyDVYoWats4bhKLbO8cu9hQ73WBjty-e5mA",
+authDomain:"aljj-28d36.firebaseapp.com",
+databaseURL:"https://aljj-28d36-default-rtdb.firebaseio.com",
+projectId:"aljj-28d36",
+storageBucket:"aljj-28d36.firebasestorage.app",
+messagingSenderId:"256012982420",
+appId:"1:256012982420:web:3a1541af04b99d658e7c81",
+measurementId:"G-43WH1GKJFC"
 };
 
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getDatabase(app);
 
-// عناصر DOM
-const postsContainer = document.getElementById('postsContainer');
-const newPostBtn = document.getElementById('newPostBtn');
-const writePostContainer = document.getElementById('writePostContainer');
-const publishBtn = document.getElementById('publishBtn');
-const postInput = document.getElementById('postInput');
+const postsContainer=document.getElementById('postsContainer');
+const newPostBtn=document.getElementById('newPostBtn');
+const writePostContainer=document.getElementById('writePostContainer');
+const publishBtn=document.getElementById('publishBtn');
+const postInput=document.getElementById('postInput');
+const commentModal=document.getElementById('commentModal');
+const modalComments=document.getElementById('modal-comments');
+const modalCommentInput=document.getElementById('modal-comment-input');
+const modalCommentBtn=document.getElementById('modal-comment-btn');
+const closeModal=document.getElementById('closeModal');
 
-const commentModal = document.getElementById('commentModal');
-const modalComments = document.getElementById('modal-comments');
-const modalCommentInput = document.getElementById('modal-comment-input');
-const modalCommentBtn = document.getElementById('modal-comment-btn');
-const closeModal = document.getElementById('closeModal');
+const loginContainer=document.getElementById('loginContainer');
+const registerContainer=document.getElementById('registerContainer');
+const loginBtn=document.getElementById('loginBtn');
+const registerBtn=document.getElementById('registerBtn');
+const showRegister=document.getElementById('showRegister');
+const showLogin=document.getElementById('showLogin');
 
-const loginContainer = document.getElementById('loginContainer');
-const registerContainer = document.getElementById('registerContainer');
-const loginBtn = document.getElementById('loginBtn');
-const registerBtn = document.getElementById('registerBtn');
-const showRegister = document.getElementById('showRegister');
-const showLogin = document.getElementById('showLogin');
+const loginPhone=document.getElementById('loginPhone');
+const loginPassword=document.getElementById('loginPassword');
+const registerPhone=document.getElementById('registerPhone');
+const registerPassword=document.getElementById('registerPassword');
+const registerUsername=document.getElementById('registerUsername');
 
-const loginPhone = document.getElementById('loginPhone');
-const loginPassword = document.getElementById('loginPassword');
-const registerPhone = document.getElementById('registerPhone');
-const registerPassword = document.getElementById('registerPassword');
-const registerUsername = document.getElementById('registerUsername');
+const myAccountBtn=document.getElementById('myAccountBtn');
+const accountPage=document.getElementById('accountPage');
+const accountPostsContainer=document.getElementById('accountPostsContainer');
 
-const myAccountBtn = document.getElementById('myAccountBtn');
-const accountPage = document.getElementById('accountPage');
-const accountPostsContainer = document.getElementById('accountPostsContainer');
+const searchBtn=document.getElementById('searchBtn');
+const searchContainer=document.getElementById('searchContainer');
+const searchInput=document.getElementById('searchInput');
+const searchResults=document.getElementById('searchResults');
 
-const searchBtn = document.getElementById('searchBtn');
-const searchContainer = document.getElementById('searchContainer');
-const searchInput = document.getElementById('searchInput');
-const searchResults = document.getElementById('searchResults');
+let currentUser=null;
+let currentCommentPost=null;
 
-let currentUser = null;
-let currentCommentPost = null;
-
-// --- تبديل بين تسجيل الدخول وإنشاء حساب ---
 showRegister.addEventListener('click',()=>{loginContainer.style.display='none';registerContainer.style.display='flex';});
 showLogin.addEventListener('click',()=>{registerContainer.style.display='none';loginContainer.style.display='flex';});
 
-// --- تسجيل مستخدم جديد ---
 registerBtn.addEventListener('click', async ()=>{
-    const phone = registerPhone.value.trim();
-    const pass = registerPassword.value.trim();
-    const username = registerUsername.value.trim();
-    if(!phone || !pass || !username) return alert("أكمل جميع الحقول");
-
-    // تحقق إذا الهاتف موجود
-    const snap = await get(ref(db,'users/'+phone));
-    if(snap.exists()) return alert("رقم الهاتف موجود مسبقاً");
-
-    await push(ref(db,'users/'+phone),{password: pass, username});
-    currentUser = {phone, username};
-    loginContainer.style.display='none';
-    registerContainer.style.display='none';
-    alert("تم إنشاء الحساب بنجاح!");
-    loadPosts();
+let phone=registerPhone.value.trim();
+let pass=registerPassword.value.trim();
+let username=registerUsername.value.trim();
+if(!phone||!pass||!username)return alert("أكمل جميع الحقول");
+const snap=await get(ref(db,'users/'+phone));
+if(snap.exists())return alert("رقم الهاتف موجود مسبقاً");
+await set(ref(db,'users/'+phone),{password:pass,username});
+currentUser={phone,username};
+loginContainer.style.display='none';
+registerContainer.style.display='none';
+loadPosts();
 });
 
-// --- تسجيل الدخول ---
 loginBtn.addEventListener('click', async ()=>{
-    const phone = loginPhone.value.trim();
-    const pass = loginPassword.value.trim();
-    if(!phone || !pass) return alert("أكمل جميع الحقول");
-
-    const snap = await get(ref(db,'users/'+phone));
-    if(!snap.exists()) return alert("رقم الهاتف غير موجود");
-
-    let userData = Object.values(snap.val())[0];
-    if(userData.password !== pass) return alert("كلمة المرور خاطئة");
-
-    currentUser = {phone, username: userData.username};
-    loginContainer.style.display='none';
-    registerContainer.style.display='none';
-    loadPosts();
+let phone=loginPhone.value.trim();
+let pass=loginPassword.value.trim();
+if(!phone||!pass)return alert("أكمل جميع الحقول");
+const snap=await get(ref(db,'users/'+phone));
+if(!snap.exists())return alert("رقم الهاتف غير موجود");
+const userData=snap.val();
+if(userData.password!==pass)return alert("كلمة المرور خاطئة");
+currentUser={phone,username:userData.username};
+loginContainer.style.display='none';
+registerContainer.style.display='none';
+loadPosts();
 });
 
-// --- كتابة منشور ---
 newPostBtn.addEventListener('click',()=>{writePostContainer.style.display=writePostContainer.style.display==='flex'?'none':'flex';postInput.focus();});
-publishBtn.addEventListener('click', async ()=>{
-    if(!currentUser) return alert("سجل الدخول أولاً");
-    const content = postInput.value.trim();
-    if(!content) return alert("المنشور فارغ");
-
-    const post = {content, likes:0, shares:0, views:0, user: currentUser.username, comments:{}};
-    const newPostRef = push(ref(db,'posts'));
-    newPostRef.set(post);
-    postInput.value='';
-    writePostContainer.style.display='none';
+publishBtn.addEventListener('click',async ()=>{
+if(!currentUser)return alert("سجل الدخول أولاً");
+let content=postInput.value.trim();
+if(!content)return alert("المنشور فارغ");
+let post={content,user:currentUser.username,likes:0,shares:0,views:0,likedBy:{},comments:{}};
+await push(ref(db,'posts'),post);
+postInput.value='';
+writePostContainer.style.display='none';
 });
 
-// --- إنشاء عنصر منشور ---
-function createPostElement(postId, postData, container=postsContainer){
-    const postDiv = document.createElement('div');
-    postDiv.className='post';
-    postDiv.dataset.id=postId;
-    postDiv.innerHTML = `
-        <div class="post-header">${postData.user}</div>
-        <div class="post-content">${postData.content}</div>
-        <div class="post-footer">
-            <button class="like-btn">
-                <svg fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                </svg>
-                <span class="like-count">${postData.likes||0}</span>
-            </button>
-            <button class="comment-btn">
-                <svg fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M21 6h-2v9H5v2c0 0.55 0.45 1 1 1h9l4 4V7c0-0.55-0.45-1-1-1z"/>
-                </svg>
-                <span class="comment-count">${postData.comments?Object.keys(postData.comments).length:0}</span>
-            </button>
-            <button class="view-btn" disabled>
-                <svg fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7zm0 12c-2.76 0-5-2.24-5-5s2.24-5 5-5 
-                    5 2.24 5 5-2.24 5-5 5z"/>
-                    <circle cx="12" cy="12" r="2.5"/>
-                </svg>
-                <span class="view-count">${postData.views||0}</span>
-            </button>
-            <button class="share-btn">
-                <svg fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M18 16.08c-0.76 0-1.44 0.3-1.96 0.77L8.91 12.7c0.05-0.23 0.09-0.46 0.09-0.7s-0.03-0.47-0.09-0.7l7.02-4.11c0.53 0.5 1.23 0.81 2.07 0.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 0.24 0.03 0.47 0.09 0.7l-7.02 4.11c-0.53-0.5-1.23-0.81-2.07-0.81-1.66 0-3 1.34-3 3s1.34 3 3 3c0.84 0 1.54-0.31 2.07-0.81l7.12 4.17c-0.05 0.21-0.08 0.43-0.08 0.64 0 1.66 1.34 3 3 3s3-1.34 3-3-1.34-3-3-3z"/>
-                </svg>
-                <span class="share-count">${postData.shares||0}</span>
-            </button>
-        </div>
-    `;
-    container.prepend(postDiv);
+function createPostElement(postId,postData,container=postsContainer){
+const postDiv=document.createElement('div');
+postDiv.className='post';
+postDiv.dataset.id=postId;
+postDiv.innerHTML=`<div class="post-header">${postData.user}</div>
+<div class="post-content">${postData.content}</div>
+<div class="post-footer">
+<button class="like-btn">❤ <span class="like-count">${postData.likes||0}</span></button>
+<button class="comment-btn">💬 <span class="comment-count">${postData.comments?Object.keys(postData.comments).length:0}</span></button>
+<button class="view-btn" disabled>👁️ <span class="view-count">${postData.views||0}</span></button>
+<button class="share-btn">🔗 <span class="share-count">${postData.shares||0}</span></button>
+</div>`;
+container.prepend(postDiv);
 
-    const likeBtn = postDiv.querySelector('.like-btn');
-    const likeCount = postDiv.querySelector('.like-count');
-    const commentBtn = postDiv.querySelector('.comment-btn');
-    const commentCountSpan = postDiv.querySelector('.comment-count');
-    const shareBtn = postDiv.querySelector('.share-btn');
-    const shareCount = postDiv.querySelector('.share-count');
-    const viewCountSpan = postDiv.querySelector('.view-count');
+const likeBtn=postDiv.querySelector('.like-btn');
+const likeCount=postDiv.querySelector('.like-count');
+const commentBtn=postDiv.querySelector('.comment-btn');
+const commentCountSpan=postDiv.querySelector('.comment-count');
+const shareBtn=postDiv.querySelector('.share-btn');
+const shareCount=postDiv.querySelector('.share-count');
+const viewCountSpan=postDiv.querySelector('.view-count');
 
-    likeBtn.addEventListener('click',()=>{
-        postData.likes = (postData.likes||0)+1;
-        update(ref(db,'posts/'+postId),{likes: postData.likes});
-        likeCount.textContent = postData.likes;
-    });
+likeBtn.addEventListener('click',()=>{
+if(postData.likedBy && postData.likedBy[currentUser.phone])return;
+postData.likes=(postData.likes||0)+1;
+postData.likedBy[ currentUser.phone ]=true;
+update(ref(db,'posts/'+postId),{likes:postData.likes,likedBy:postData.likedBy});
+likeCount.textContent=postData.likes;
+});
 
-    commentBtn.addEventListener('click',()=>{
-        currentCommentPost = {id:postId, data:postData};
-        updateModalComments(postData);
-        commentModal.style.display='flex';
-    });
+commentBtn.addEventListener('click',()=>{
+currentCommentPost={id:postId,data:postData};
+updateModalComments(postData);
+commentModal.style.display='flex';
+});
 
-    modalCommentBtn.addEventListener('click',()=>{
-        const text = modalCommentInput.value.trim();
-        if(!text || !currentCommentPost) return;
-        const commentRef = push(ref(db,`posts/${currentCommentPost.id}/comments`));
-        commentRef.set({text});
-        modalCommentInput.value='';
-    });
+modalCommentBtn.addEventListener('click',async ()=>{
+let text=modalCommentInput.value.trim();
+if(!text || !currentCommentPost)return;
+const commentRef=push(ref(db,`posts/${currentCommentPost.id}/comments`));
+await commentRef.set({user:currentUser.username,text});
+modalCommentInput.value='';
+});
 
-    shareBtn.addEventListener('click',()=>{
-        postData.shares = (postData.shares||0)+1;
-        update(ref(db,'posts/'+postId),{shares: postData.shares});
-        shareCount.textContent = postData.shares;
-        alert("تم نسخ رابط المشاركة! (محاكاة)");
-    });
+shareBtn.addEventListener('click',()=>{
+postData.shares=(postData.shares||0)+1;
+update(ref(db,'posts/'+postId),{shares:postData.shares});
+shareCount.textContent=postData.shares;
+alert("تم نسخ رابط المشاركة! (محاكاة)");
+});
 
-    const observer = new IntersectionObserver((entries, obs)=>{
-        entries.forEach(entry=>{
-            if(entry.isIntersecting){
-                postData.views = (postData.views||0)+1;
-                update(ref(db,'posts/'+postId),{views: postData.views});
-                viewCountSpan.textContent = postData.views;
-                obs.unobserve(postDiv);
-            }
-        });
-    },{threshold:0.5});
-    observer.observe(postDiv);
+const observer=new IntersectionObserver((entries,obs)=>{
+entries.forEach(entry=>{
+if(entry.isIntersecting){
+postData.views=(postData.views||0)+1;
+update(ref(db,'posts/'+postId),{views:postData.views});
+viewCountSpan.textContent=postData.views;
+obs.unobserve(postDiv);
+}
+});
+},{threshold:0.5});
+observer.observe(postDiv);
 }
 
-// --- تحديث التعليقات ---
 function updateModalComments(postData){
-    modalComments.innerHTML = postData.comments ? 
-      Object.values(postData.comments).map(c=>`<div class="comment"><strong>مستخدم:</strong> ${c.text}</div>`).join('') 
-      : '';
+modalComments.innerHTML=postData.comments?Object.values(postData.comments).map(c=>`<div class="comment"><strong>${c.user}:</strong> ${c.text}</div>`).join(''):'';
 }
 
-// --- اغلاق نافذة التعليقات ---
-closeModal.addEventListener('click',()=> commentModal.style.display='none');
-window.addEventListener('click', e=>{if(e.target==commentModal) commentModal.style.display='none';});
+closeModal.addEventListener('click',()=>commentModal.style.display='none');
+window.addEventListener('click',e=>{if(e.target==commentModal)commentModal.style.display='none';});
 
-// --- تحميل جميع المنشورات ---
 function loadPosts(){
-    postsContainer.innerHTML='';
-    accountPostsContainer.innerHTML='';
-    onChildAdded(ref(db,'posts'), snapshot=>{
-        const post = snapshot.val();
-        createPostElement(snapshot.key, post);
-        if(currentUser && post.user===currentUser.username){
-            createPostElement(snapshot.key, post, accountPostsContainer);
-        }
-    });
+postsContainer.innerHTML='';
+accountPostsContainer.innerHTML='';
+onChildAdded(ref(db,'posts'),snapshot=>{
+let post=snapshot.val();
+createPostElement(snapshot.key,post);
+if(currentUser && post.user===currentUser.username){
+createPostElement(snapshot.key,post,accountPostsContainer);
+}
+});
 }
 
-// --- زر "حسابي" ---
 myAccountBtn.addEventListener('click',()=>{
-    if(!currentUser) return alert("سجل الدخول أولاً");
-    accountPage.style.display='flex';
-    postsContainer.style.display='none';
-    searchContainer.style.display='none';
+if(!currentUser)return alert("سجل الدخول أولاً");
+accountPage.style.display='flex';
+postsContainer.style.display='none';
+searchContainer.style.display='none';
 });
 
-// --- زر البحث ---
 searchBtn.addEventListener('click',()=>{
-    searchContainer.style.display='flex';
-    postsContainer.style.display='none';
-    accountPage.style.display='none';
+searchContainer.style.display='flex';
+postsContainer.style.display='none';
+accountPage.style.display='none';
 });
-searchInput.addEventListener('input', async ()=>{
-    const val = searchInput.value.trim();
-    searchResults.innerHTML='';
-    if(!val) return;
-    const q = query(ref(db,'users'), orderByChild('username'));
-    const snap = await get(q);
-    if(snap.exists()){
-        Object.values(snap.val()).forEach(userGroup=>{
-            Object.values(userGroup).forEach(u=>{
-                if(u.username.toLowerCase().includes(val.toLowerCase())){
-                    const div = document.createElement('div');
-                    div.textContent = u.username;
-                    searchResults.appendChild(div);
-                }
-            });
-        });
-    }
+searchInput.addEventListener('input',async ()=>{
+let val=searchInput.value.trim();
+searchResults.innerHTML='';
+if(!val)return;
+const snap=await get(ref(db,'users'));
+if(snap.exists()){
+Object.values(snap.val()).forEach(u=>{
+if(u.username.toLowerCase().includes(val.toLowerCase())){
+const div=document.createElement('div');div.textContent=u.username;searchResults.appendChild(div);
+}
+});
+}
 });
 </script>
 </body>
-</html>
+    </html>
