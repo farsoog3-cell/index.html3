@@ -5,127 +5,195 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Zom - المنشورات</title>
 <style>
-body { font-family: Arial; margin:0; background:#f0f0f0; }
-header { background:#000; color:#fff; padding:10px; text-align:center; }
-#postsContainer { padding:10px; }
-.post { background:#fff; margin-bottom:10px; border-radius:10px; padding:10px; box-shadow:0 3px 5px rgba(0,0,0,0.2); }
-button { margin:3px; cursor:pointer; }
-#writePostContainer { position:fixed; bottom:10px; left:50%; transform:translateX(-50%); background:#fff; padding:10px; border-radius:10px; display:flex; gap:5px; width:90%; max-width:500px; }
-#logoutBtn { position:fixed; top:10px; right:10px; padding:5px 10px; cursor:pointer; background:red; color:white; border:none; border-radius:5px; }
-.commentContainer { display:none; flex-direction:column; gap:5px; margin-top:5px; }
-.commentContainer input { padding:5px; border-radius:5px; border:1px solid #ccc; }
+/* نسخة كاملة من التنسيقات الأصلية كما أعطيتني */
+body { margin:0; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:linear-gradient(to bottom,#fff,#e0e0e0); color:#000; display:flex; flex-direction:column; height:100vh; }
+header { background:#fff; color:#000; padding:15px; text-align:center; font-size:1.5em; font-weight:bold; }
+main { flex:1; overflow-y:auto; padding:10px; }
+.post { background:#fff; border-radius:15px; margin-bottom:15px; box-shadow:0 3px 10px rgba(0,0,0,0.2); border:2px solid #000; display:flex; flex-direction:column; overflow:hidden; }
+.post-header { font-weight:bold; padding:10px; border-bottom:1px solid #ccc; flex-shrink:0; }
+.post-content { padding:10px; overflow-y:auto; flex:1; }
+.post-footer { display:flex; justify-content:space-between; align-items:center; padding:10px; background:rgba(0,0,0,0.05); flex-shrink:0; }
+.post-footer button { border:none; background:transparent; cursor:pointer; display:flex; align-items:center; gap:5px; font-size:1em; transition:0.2s; color:black; }
+.post-footer button:hover { transform:scale(1.1); }
+.post-footer button.like.active { color:#000; }
+#writePostContainer { position:fixed; bottom:90px; left:50%; transform:translateX(-50%); width:90%; background:#fff; padding:10px 15px; box-shadow:0 -3px 10px rgba(0,0,0,0.2); border-radius:15px; display:flex; gap:10px; z-index:100; border:2px solid #000; }
+#writePostContainer textarea { flex:1; height:40px; padding:10px 12px; border-radius:12px; border:1px solid #ccc; resize:none; font-size:1em; outline:none; }
+#writePostContainer button { padding:8px 15px; border:none; border-radius:12px; background-color:#000; color:#fff; font-weight:bold; cursor:pointer; font-size:0.9em; transition:0.2s; }
+#writePostContainer button:hover { transform:scale(1.05); }
+#topButtonsContainer { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); display:flex; gap:15px; padding:10px; border:2px solid #000; border-radius:30px; background:#fff; box-shadow:0 3px 6px rgba(0,0,0,0.2); z-index:100; }
+.button-wrapper button { width:100px; height:50px; border:2px solid #000; border-radius:25px; background:#fff; color:#000; font-weight:bold; cursor:pointer; transition:0.2s; }
+.button-wrapper button:hover { background:#000; color:#fff; transform:scale(1.05); }
+#commentModal { display:none; position:fixed; z-index:200; left:0; top:0; width:100%; height:100%; backdrop-filter:blur(8px); background:rgba(0,0,0,0.2); justify-content:center; align-items:center; }
+#commentModal .modal-content { background:rgba(255,255,255,0.95); color:black; padding:0; border-radius:20px; max-width:500px; width:90%; height:60%; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 8px 25px rgba(0,0,0,0.2); }
+.modal-header { padding:15px; font-weight:bold; display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,1); border-bottom:1px solid rgba(0,0,0,0.2); color:black; }
+.close { font-size:1.5em; cursor:pointer; color:black; }
+.modal-body { flex:1; padding:15px; overflow-y:auto; background:rgba(255,255,255,0.9); color:black; }
+.comment { border-bottom:1px solid rgba(0,0,0,0.1); padding:8px 0; }
+.comment strong { margin-right:5px; color:black; }
+.modal-footer { padding:10px 15px; display:flex; gap:10px; border-top:1px solid rgba(0,0,0,0.2); background:rgba(255,255,255,0.95); }
+.modal-footer input { flex:1; border-radius:20px; padding:10px 15px; border:1px solid rgba(0,0,0,0.2); background:rgba(255,255,255,0.8); color:black; }
+.modal-footer input::placeholder { color:rgba(0,0,0,0.5); }
+.modal-footer button { border-radius:20px; padding:10px 20px; background:#000; color:white; font-weight:bold; cursor:pointer; border:none; }
+button svg { width:20px; height:20px; vertical-align:middle; fill:black; }
 </style>
 </head>
 <body>
 
 <header>Zom</header>
-<button id="logoutBtn">تسجيل الخروج</button>
+
 <main id="postsContainer"></main>
 
 <div id="writePostContainer">
-  <input type="text" id="postInput" placeholder="اكتب منشورك هنا...">
-  <button id="publishBtn">نشر</button>
+    <textarea id="postInput" placeholder="اكتب منشورك هنا..."></textarea>
+    <button id="publishBtn">نشر</button>
+</div>
+
+<div id="topButtonsContainer">
+    <div class="button-wrapper">
+        <button id="newPostBtn">منشور جديد</button>
+    </div>
+    <div class="button-wrapper">
+        <button id="logoutBtn">تسجيل الخروج</button>
+    </div>
+</div>
+
+<div id="commentModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            التعليقات
+            <span class="close" id="closeModal">&times;</span>
+        </div>
+        <div class="modal-body" id="modal-comments"></div>
+        <div class="modal-footer">
+            <input type="text" id="modal-comment-input" placeholder="أضف تعليق...">
+            <button id="modal-comment-btn">تعليق</button>
+        </div>
+    </div>
 </div>
 
 <script type="module">
 import { db } from './firebase-config.js';
-import { ref, push, onChildAdded, update, get, child } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
+import { ref, push, onChildAdded, update } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
 
-const postsContainer = document.getElementById("postsContainer");
-const postInput = document.getElementById("postInput");
-const publishBtn = document.getElementById("publishBtn");
-const logoutBtn = document.getElementById("logoutBtn");
+const currentUser = localStorage.getItem('currentUser');
+if(!currentUser) window.location.href='index.html';
 
-const currentUserPhone = localStorage.getItem("currentUser");
-if(!currentUserPhone) window.location.href = "index.html";
+const postsContainer = document.getElementById('postsContainer');
+const newPostBtn = document.getElementById('newPostBtn');
+const writePostContainer = document.getElementById('writePostContainer');
+const publishBtn = document.getElementById('publishBtn');
+const postInput = document.getElementById('postInput');
 
-logoutBtn.onclick = () => { localStorage.removeItem("currentUser"); window.location.href="index.html"; };
+const commentModal = document.getElementById('commentModal');
+const modalComments = document.getElementById('modal-comments');
+const modalCommentInput = document.getElementById('modal-comment-input');
+const modalCommentBtn = document.getElementById('modal-comment-btn');
+const closeModal = document.getElementById('closeModal');
 
-publishBtn.onclick = async () => {
-  const content = postInput.value.trim();
-  if(!content) return alert("المنشور فارغ");
-  const post = { content, user: currentUserPhone, likes:0, shares:0, views:0, comments:{} };
-  await push(ref(db,'posts'), post);
-  postInput.value='';
+let currentCommentPostId = null;
+
+// Toggle صندوق كتابة المنشور
+newPostBtn.onclick = () => {
+    if(writePostContainer.style.display==='flex') writePostContainer.style.display='none';
+    else { writePostContainer.style.display='flex'; postInput.focus(); }
 };
 
+// نشر منشور جديد
+publishBtn.onclick = async () => {
+    const content = postInput.value.trim();
+    if(!content) return alert("المنشور فارغ");
+    const post = { user: currentUser, content, likes:0, shares:0, views:0, comments:{} };
+    await push(ref(db,'posts'), post);
+    postInput.value=''; writePostContainer.style.display='none';
+};
+
+// إنشاء منشور
 function createPostElement(postId, postData){
-  const postDiv = document.createElement('div');
-  postDiv.className = 'post';
-  postDiv.innerHTML = `
-    <strong>${postData.user}</strong>: ${postData.content}<br>
-    <button class="likeBtn">إعجاب (${postData.likes})</button>
-    <button class="shareBtn">مشاركة (${postData.shares})</button>
-    <button class="viewBtn" disabled>مشاهدات (${postData.views})</button>
-    <button class="commentBtn">تعليقات (${postData.comments ? Object.keys(postData.comments).length : 0})</button>
-    <div class="commentContainer">
-      <input type="text" placeholder="أضف تعليق...">
-      <button class="addCommentBtn">تعليق</button>
-      <div class="commentsList"></div>
-    </div>
-  `;
+    const postDiv = document.createElement('div');
+    postDiv.className='post';
+    postDiv.dataset.id = postId;
+    postDiv.innerHTML=`
+        <div class="post-header">${postData.user}</div>
+        <div class="post-content">${postData.content}</div>
+        <div class="post-footer">
+            <button class="like-btn">❤️ <span class="like-count">${postData.likes}</span></button>
+            <button class="comment-btn">💬 <span class="comment-count">${postData.comments ? Object.keys(postData.comments).length:0}</span></button>
+            <button class="view-btn" disabled>👁️ <span class="view-count">${postData.views}</span></button>
+            <button class="share-btn">🔗 <span class="share-count">${postData.shares}</span></button>
+        </div>
+    `;
+    postsContainer.prepend(postDiv);
 
-  const likeBtn = postDiv.querySelector(".likeBtn");
-  const shareBtn = postDiv.querySelector(".shareBtn");
-  const viewBtn = postDiv.querySelector(".viewBtn");
-  const commentBtn = postDiv.querySelector(".commentBtn");
-  const commentContainer = postDiv.querySelector(".commentContainer");
-  const addCommentBtn = postDiv.querySelector(".addCommentBtn");
-  const commentInput = commentContainer.querySelector("input");
-  const commentsList = postDiv.querySelector(".commentsList");
+    const likeBtn = postDiv.querySelector('.like-btn');
+    const likeCount = postDiv.querySelector('.like-count');
+    const commentBtn = postDiv.querySelector('.comment-btn');
+    const commentCountSpan = postDiv.querySelector('.comment-count');
+    const shareBtn = postDiv.querySelector('.share-btn');
+    const shareCount = postDiv.querySelector('.share-count');
+    const viewCountSpan = postDiv.querySelector('.view-count');
 
-  likeBtn.onclick = () => {
-    postData.likes = (postData.likes || 0)+1;
-    update(ref(db,'posts/'+postId), { likes: postData.likes });
-    likeBtn.textContent = `إعجاب (${postData.likes})`;
-  };
+    likeBtn.onclick = async () => {
+        postData.likes = (postData.likes||0)+1;
+        await update(ref(db,'posts/'+postId),{likes:postData.likes});
+        likeCount.textContent = postData.likes;
+    };
 
-  shareBtn.onclick = () => {
-    postData.shares = (postData.shares || 0)+1;
-    update(ref(db,'posts/'+postId), { shares: postData.shares });
-    shareBtn.textContent = `مشاركة (${postData.shares})`;
-    alert("تم نسخ رابط المشاركة! (محاكاة)");
-  };
+    shareBtn.onclick = async () => {
+        postData.shares = (postData.shares||0)+1;
+        await update(ref(db,'posts/'+postId),{shares:postData.shares});
+        shareCount.textContent = postData.shares;
+        alert("تم نسخ رابط المشاركة! (محاكاة)");
+    };
 
-  // مشاهدات عند الظهور
-  const observer = new IntersectionObserver((entries, obs) => {
-    entries.forEach(entry => {
-      if(entry.isIntersecting){
-        postData.views = (postData.views || 0)+1;
-        update(ref(db,'posts/'+postId), { views: postData.views });
-        viewBtn.textContent = `مشاهدات (${postData.views})`;
-        obs.unobserve(postDiv);
-      }
-    });
-  }, {threshold:0.5});
-  observer.observe(postDiv);
+    commentBtn.onclick = () => {
+        currentCommentPostId = postId;
+        updateModalComments(postData);
+        commentModal.style.display='flex';
+    };
 
-  // التعليقات
-  commentBtn.onclick = () => { commentContainer.style.display = commentContainer.style.display==='flex'?'none':'flex'; }
-  addCommentBtn.onclick = async () => {
-    const text = commentInput.value.trim();
-    if(!text) return;
-    const commentRef = push(ref(db,'posts/'+postId+'/comments'));
-    await commentRef.set({ user: currentUserPhone, text });
-    commentInput.value='';
-  };
+    modalCommentBtn.onclick = async () => {
+        const text = modalCommentInput.value.trim();
+        if(!text || !currentCommentPostId) return;
+        const commentRef = push(ref(db,'posts/'+currentCommentPostId+'/comments'));
+        await commentRef.set({ user: currentUser, text });
+        modalCommentInput.value='';
+    };
 
-  // تحميل التعليقات
-  const commentsRef = ref(db,'posts/'+postId+'/comments');
-  onChildAdded(commentsRef, snapshot => {
-    const c = snapshot.val();
-    const div = document.createElement("div");
-    div.textContent = `${c.user}: ${c.text}`;
-    commentsList.appendChild(div);
-    commentBtn.textContent = `تعليقات (${commentsList.childElementCount})`;
-  });
-
-  postsContainer.prepend(postDiv);
+    const observer = new IntersectionObserver((entries, obs)=>{
+        entries.forEach(async entry=>{
+            if(entry.isIntersecting){
+                postData.views=(postData.views||0)+1;
+                await update(ref(db,'posts/'+postId),{views:postData.views});
+                viewCountSpan.textContent = postData.views;
+                obs.unobserve(postDiv);
+            }
+        });
+    },{threshold:0.5});
+    observer.observe(postDiv);
 }
 
-// جلب كل المنشورات من Firebase
-const postsRef = ref(db,'posts');
-onChildAdded(postsRef, snapshot => createPostElement(snapshot.key, snapshot.val()));
+function updateModalComments(postData){
+    modalComments.innerHTML='';
+    if(!postData.comments) return;
+    for(const key in postData.comments){
+        const c=postData.comments[key];
+        const div=document.createElement('div');
+        div.className='comment';
+        div.innerHTML=`<strong>${c.user}:</strong> ${c.text}`;
+        modalComments.appendChild(div);
+    }
+}
+
+closeModal.onclick = ()=> commentModal.style.display='none';
+window.onclick = e=> { if(e.target==commentModal) commentModal.style.display='none'; }
+
+onChildAdded(ref(db,'posts'), snapshot => createPostElement(snapshot.key, snapshot.val()));
+
+// تسجيل خروج
+document.getElementById('logoutBtn').onclick=()=> {
+    localStorage.removeItem('currentUser');
+    window.location.href='index.html';
+};
 </script>
 
 </body>
