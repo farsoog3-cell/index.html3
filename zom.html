@@ -4,157 +4,87 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Zom - الصفحة الرئيسية</title>
+
 <style>
   body {
     font-family: Arial, sans-serif;
+    background: linear-gradient(to bottom right, #7B2FF7, #E100FF);
+    color: white;
     margin: 0;
     padding: 0;
-    display: flex;
-    min-height: 100vh;
-    background: linear-gradient(135deg, #7B2FF7, #E100FF);
-    color: white;
-    transition: background 0.5s;
   }
 
-  /* الشريط الجانبي */
-  .sidebar {
-    width: 220px;
-    background-color: rgba(0,0,0,0.3);
-    display: flex;
-    flex-direction: column;
+  header {
+    background-color: rgba(255, 255, 255, 0.1);
     padding: 20px;
-    box-shadow: 2px 0 10px rgba(0,0,0,0.3);
-  }
-
-  .sidebar h2 {
-    margin-bottom: 30px;
     text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
   }
 
-  .sidebar button {
-    background-color: rgba(255,255,255,0.2);
-    color: white;
-    border: none;
-    padding: 12px 15px;
-    margin-bottom: 15px;
-    border-radius: 6px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: 0.3s;
-    text-align: left;
-  }
-
-  .sidebar button:hover {
-    background-color: rgba(255,255,255,0.4);
-    transform: scale(1.05);
-  }
-
-  /* المحتوى الرئيسي */
-  .content {
-    flex: 1;
+  main {
     display: flex;
     justify-content: center;
-    align-items: flex-start;
-    flex-direction: column;
-    padding: 40px;
+    align-items: center;
+    height: calc(100vh - 80px);
     text-align: center;
+    flex-direction: column;
   }
 
   h1 {
-    font-size: 32px;
+    font-size: 36px;
     margin-bottom: 20px;
   }
 
   p {
-    font-size: 18px;
-    max-width: 600px;
-    margin: 0 auto;
+    font-size: 20px;
+    max-width: 500px;
   }
 
-  /* تجاوب */
-  @media (max-width: 768px) {
-    body {
-      flex-direction: column;
-    }
-    .sidebar {
-      width: 100%;
-      flex-direction: row;
-      overflow-x: auto;
-    }
-    .sidebar button {
-      flex: 1;
-      margin-right: 10px;
-    }
-    .content {
-      padding: 20px;
-    }
+  button {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    background-color: white;
+    color: #7B2FF7;
+    font-weight: bold;
+    font-size: 18px;
+    cursor: pointer;
+    margin-top: 30px;
+    transition: 0.3s;
+  }
+
+  button:hover {
+    background-color: #E0E0E0;
   }
 </style>
 </head>
 <body>
 
-  <!-- الشريط الجانبي -->
-  <div class="sidebar">
-    <h2>Zom</h2>
-    <button id="home-btn">الصفحة الرئيسية</button>
-    <button id="account-btn">صفحة الحساب</button>
-    <button id="notifications-btn">الإشعارات</button>
-    <button id="logout-btn">تسجيل الخروج</button>
-  </div>
+  <header>Zom</header>
 
-  <!-- المحتوى الرئيسي -->
-  <div class="content" id="main-content">
-    <h1 id="page-title">مرحباً!</h1>
-    <p id="page-text">هذه هي الصفحة الرئيسية لموقع Zom. يمكنك الآن التفاعل مع المحتوى الخاص بك هنا. كل شيء مصمم بلون بنفسجي وأبيض احترافي.</p>
-  </div>
+  <main>
+    <h1 id="welcome-msg">مرحباً!</h1>
+    <p>هذه هي الصفحة الرئيسية لموقع Zom. يمكنك الآن التفاعل مع المحتوى الخاص بك هنا. كل شيء مصمم بلون بنفسجي وأبيض احترافي.</p>
+    <button id="logout-btn">تسجيل الخروج</button>
+  </main>
 
   <script>
+    // جلب اسم المستخدم من LocalStorage
     const username = localStorage.getItem("username");
-    if (!username || username.trim() === "") {
+
+    if (username) {
+      document.getElementById("welcome-msg").textContent = `مرحباً، ${username}!`;
+    } else {
+      // إعادة التوجيه إذا لم يوجد اسم مستخدم
       location.href = "index.html";
     }
 
-    const contentTitle = document.getElementById("page-title");
-    const contentText = document.getElementById("page-text");
-
-    // الصفحات المحتوى
-    const pages = {
-      home: {
-        title: `مرحباً، ${username}!`,
-        text: "هذه هي الصفحة الرئيسية لموقع Zom. يمكنك الآن التفاعل مع المحتوى الخاص بك هنا. كل شيء مصمم بلون بنفسجي وأبيض احترافي."
-      },
-      account: {
-        title: "صفحة الحساب",
-        text: `اسم المستخدم: ${username} \nيمكنك تعديل بياناتك هنا.`
-      },
-      notifications: {
-        title: "الإشعارات",
-        text: "ليس لديك إشعارات جديدة حالياً. سيتم عرض أي تحديثات هنا."
-      }
-    };
-
-    // التبديل بين الصفحات
-    document.getElementById("home-btn").addEventListener("click", () => {
-      contentTitle.textContent = pages.home.title;
-      contentText.textContent = pages.home.text;
-    });
-
-    document.getElementById("account-btn").addEventListener("click", () => {
-      contentTitle.textContent = pages.account.title;
-      contentText.textContent = pages.account.text;
-    });
-
-    document.getElementById("notifications-btn").addEventListener("click", () => {
-      contentTitle.textContent = pages.notifications.title;
-      contentText.textContent = pages.notifications.text;
-    });
-
-    // تسجيل الخروج مع تأكيد
+    // تسجيل الخروج
     document.getElementById("logout-btn").addEventListener("click", () => {
-      if(confirm("هل أنت متأكد من تسجيل الخروج؟")) {
-        localStorage.removeItem("username");
-        location.href = "index.html";
-      }
+      localStorage.removeItem("username");
+      location.href = "index.html";
     });
   </script>
 
