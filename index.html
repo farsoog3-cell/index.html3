@@ -3,7 +3,70 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zom - تسجيل دخول أو إنشاء حساب</title>
+<title>Zom - نظام كامل</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to bottom right, #7B2FF7, #E100FF);
+    color: white;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .container {
+    background-color: rgba(255,255,255,0.1);
+    width: 350px;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    text-align: center;
+  }
+
+  input, button {
+    width: 90%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: none;
+  }
+
+  button {
+    background: white;
+    color: #7B2FF7;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background: #ddd;
+  }
+
+  a {
+    color: #FFD700;
+    cursor: pointer;
+    display: block;
+    margin-top: 10px;
+  }
+
+  /* الصفحة الرئيسية بعد تسجيل الدخول */
+  #main-page {
+    display: none;
+    text-align: center;
+  }
+
+  #logout {
+    background: #ff4b4b;
+    color: white;
+  }
+  #logout:hover {
+    background: #d80000;
+  }
+</style>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
@@ -17,148 +80,124 @@ const firebaseConfig = {
   projectId: "aljj-28d36",
   storageBucket: "aljj-28d36.firebasestorage.app",
   messagingSenderId: "256012982420",
-  appId: "1:256012982420:web:3a1541af04b99d658e7c81",
-  measurementId: "G-43WH1GKJFC"
+  appId: "1:256012982420:web:3a1541af04b99d658e7c81"
 };
 
+// تشغيل Firebase
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// التبديل بين النماذج
-function toggleForm() {
-  const loginForm = document.getElementById("login-form");
-  const registerForm = document.getElementById("register-form");
-  loginForm.style.display = loginForm.style.display === "none" ? "block" : "none";
-  registerForm.style.display = registerForm.style.display === "none" ? "block" : "none";
+// إظهار الصفحة الرئيسية إذا كان المستخدم مسجل مسبقًا
+window.addEventListener("DOMContentLoaded", () => {
+  const savedUser = localStorage.getItem("username");
+
+  if (savedUser) {
+    showMainPage(savedUser);
+  }
+});
+
+// إظهار الصفحة الرئيسية
+function showMainPage(username) {
+  document.getElementById("auth-box").style.display = "none";
+  document.getElementById("main-page").style.display = "block";
+  document.getElementById("welcome").textContent = "مرحباً، " + username + "!";
 }
 
-// إضافة أحداث الأزرار بعد تحميل DOM
-window.addEventListener("DOMContentLoaded", () => {
+/* ========== إنشاء حساب ========== */
+document.addEventListener("click", async (e) => {
 
-  // زر إنشاء حساب
-  document.getElementById("register-btn").addEventListener("click", async () => {
+  if (e.target.id === "register-btn") {
     const username = document.getElementById("register-username").value.trim();
     const password = document.getElementById("register-password").value.trim();
 
-    if (!username || !password) { alert("الرجاء إدخال اسم المستخدم وكلمة المرور"); return; }
+    if (!username || !password) return alert("املأ جميع الحقول");
 
-    const userRef = ref(db, 'users/' + username);
-    const snapshot = await get(userRef);
+    const userRef = ref(db, "users/" + username);
+    const snap = await get(userRef);
 
-    if (snapshot.exists()) {
-      alert("اسم المستخدم موجود بالفعل");
-    } else {
-      await set(userRef, { password: password });
-      alert("تم إنشاء الحساب بنجاح!");
-      location.href = "zom.html";
-    }
-  });
+    if (snap.exists()) return alert("اسم المستخدم موجود بالفعل");
 
-  // زر تسجيل الدخول
-  document.getElementById("login-btn").addEventListener("click", async () => {
+    await set(userRef, { password });
+
+    localStorage.setItem("username", username);
+    showMainPage(username);
+  }
+
+  /* ========== تسجيل الدخول ========== */
+  if (e.target.id === "login-btn") {
     const username = document.getElementById("login-username").value.trim();
     const password = document.getElementById("login-password").value.trim();
 
-    if (!username || !password) { alert("الرجاء إدخال اسم المستخدم وكلمة المرور"); return; }
+    if (!username || !password) return alert("املأ جميع الحقول");
 
-    const userRef = ref(db, 'users/' + username);
-    const snapshot = await get(userRef);
+    const userRef = ref(db, "users/" + username);
+    const snap = await get(userRef);
 
-    if (!snapshot.exists()) {
-      alert("المستخدم غير موجود");
-    } else {
-      const userData = snapshot.val();
-      if (userData.password === password) {
-        alert("تم تسجيل الدخول بنجاح!");
-        location.href = "zom.html";
-      } else {
-        alert("كلمة المرور خاطئة");
-      }
-    }
-  });
+    if (!snap.exists()) return alert("المستخدم غير موجود");
 
-  // روابط التبديل بين النماذج
-  document.getElementById("to-login").addEventListener("click", toggleForm);
-  document.getElementById("to-register").addEventListener("click", toggleForm);
+    if (snap.val().password !== password)
+      return alert("كلمة المرور خاطئة");
+
+    localStorage.setItem("username", username);
+    showMainPage(username);
+  }
+
+  /* ========== تبديل النماذج ========== */
+  if (e.target.id === "to-register") {
+    document.getElementById("login-form").style.display = "none";
+    document.getElementById("register-form").style.display = "block";
+  }
+
+  if (e.target.id === "to-login") {
+    document.getElementById("login-form").style.display = "block";
+    document.getElementById("register-form").style.display = "none";
+  }
+
+  /* ========== تسجيل الخروج ========== */
+  if (e.target.id === "logout") {
+    localStorage.removeItem("username");
+    location.reload();
+  }
 
 });
 </script>
-
-<style>
-body {
-  font-family: Arial, sans-serif;
-  background: linear-gradient(to bottom right, #7B2FF7, #E100FF);
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
-}
-
-.container {
-  background-color: rgba(255, 255, 255, 0.1);
-  padding: 40px;
-  border-radius: 15px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-  width: 350px;
-  text-align: center;
-}
-
-input {
-  width: 90%;
-  padding: 12px;
-  margin: 10px 0;
-  border: none;
-  border-radius: 8px;
-}
-
-button {
-  width: 95%;
-  padding: 12px;
-  margin-top: 10px;
-  border: none;
-  border-radius: 8px;
-  background-color: white;
-  color: #7B2FF7;
-  font-weight: bold;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-button:hover { background-color: #E0E0E0; }
-
-a {
-  color: #FFD700;
-  cursor: pointer;
-  text-decoration: underline;
-  display: block;
-  margin-top: 15px;
-}
-
-h2 { margin-bottom: 20px; }
-</style>
-
 </head>
+
 <body>
+
 <div class="container">
-  <!-- تسجيل الدخول -->
-  <div id="login-form">
-    <h2>تسجيل الدخول</h2>
-    <input type="text" id="login-username" placeholder="اسم المستخدم">
-    <input type="password" id="login-password" placeholder="كلمة المرور">
-    <button id="login-btn">دخول</button>
-    <a id="to-register">إنشاء حساب جديد</a>
+
+  <!-- شاشة تسجيل / تسجيل حساب -->
+  <div id="auth-box">
+
+    <!-- تسجيل الدخول -->
+    <div id="login-form">
+      <h2>تسجيل الدخول</h2>
+      <input type="text" id="login-username" placeholder="اسم المستخدم">
+      <input type="password" id="login-password" placeholder="كلمة المرور">
+      <button id="login-btn">دخوbutton>
+      <a id="to-register">إنشاء حساب جديد</a>
+    </div>
+
+    <!-- إنشاء حساب -->
+    <div id="register-form" style="display:none;">
+      <h2>إنشاء حساب</h2>
+      <input type="text" id="register-username" placeholder="اسم المستخدم">
+      <input type="password" id="register-password" placeholder="كلمة المرور">
+      <button id="register-btn">إنشاء الحساب</button>
+      <a id="to-login">تسجيل الدخول</a>
+    </div>
+
   </div>
 
-  <!-- إنشاء حساب -->
-  <div id="register-form" style="display: none;">
-    <h2>إنشاء حساب</h2>
-    <input type="text" id="register-username" placeholder="اسم المستخدم">
-    <input type="password" id="register-password" placeholder="كلمة المرور">
-    <button id="register-btn">إنشاء الحساب</button>
-    <a id="to-login">تسجيل الدخول</a>
+  <!-- الصفحة الرئيسية -->
+  <div id="main-page">
+    <h1 id="welcome"></h1>
+    <p>أهلاً بك في نظام Zom! موقعك جاهز الآن.</p>
+    <button id="logout">تسجيل الخروج</button>
   </div>
+
 </div>
+
 </body>
-</html>
+  </html
