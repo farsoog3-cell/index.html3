@@ -189,8 +189,8 @@ closeMenu.onclick = () => sidebar.classList.remove("open");
 
 window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("login-btn").onclick = async () => {
-    const u = login-username.value.trim();
-    const p = login-password.value.trim();
+    const u = document.getElementById("login-username").value.trim();
+    const p = document.getElementById("login-password").value.trim();
     if(!u || !p) return alert("املأ الحقول");
 
     const userRef = ref(db, 'users/' + u);
@@ -205,8 +205,8 @@ window.addEventListener("DOMContentLoaded", () => {
   };
 
   document.getElementById("register-btn").onclick = async () => {
-    const u = register-username.value.trim();
-    const p = register-password.value.trim();
+    const u = document.getElementById("register-username").value.trim();
+    const p = document.getElementById("register-password").value.trim();
     if(!u || !p) return alert("املأ الحقول");
 
     const userRef = ref(db, 'users/' + u);
