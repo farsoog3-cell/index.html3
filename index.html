@@ -13,6 +13,19 @@
    color: white;
    display: flex;
    height: 100vh;
+   overflow: hidden;
+ }
+
+ /* زر فتح القائمة */
+ .menu-btn {
+   position: absolute;
+   top: 20px;
+   left: 20px;
+   background: rgba(0,0,0,0.4);
+   padding: 12px 15px;
+   border-radius: 10px;
+   cursor: pointer;
+   font-size: 22px;
  }
 
  /* الشريط الجانبي */
@@ -23,7 +36,24 @@
    display: flex;
    flex-direction: column;
    gap: 20px;
+   height: 100%;
+   position: fixed;
+   top: 0;
+   right: -250px; /* مخفية افتراضياً */
+   transition: 0.4s;
  }
+
+ .sidebar.open {
+   right: 0;
+ }
+
+ .close-btn {
+   align-self: flex-end;
+   font-size: 22px;
+   cursor: pointer;
+   padding: 8px;
+ }
+
  .sidebar h2 {
    text-align: center;
    margin-bottom: 30px;
@@ -41,12 +71,13 @@
  }
  .sidebar a:hover { background: rgba(255,255,255,0.25); }
 
- /* الصفحة الرئيسية */
+ /* المحتوى */
  .content {
    flex: 1;
    display: flex;
    justify-content: center;
    align-items: center;
+   width: 100%;
  }
  .container {
    background-color: rgba(255, 255, 255, 0.1);
@@ -81,8 +112,11 @@
 </head>
 <body>
 
+<div class="menu-btn" id="openMenu"><i class="fa-solid fa-bars"></i></div>
+
 <!-- الشريط الجانبي -->
-<div class="sidebar">
+<div class="sidebar" id="sidebar">
+  <div class="close-btn" id="closeMenu"><i class="fa-solid fa-xmark"></i></div>
   <h2>ZOM</h2>
   <a href="#" onclick="showSection('account')"><i class="fa-solid fa-user"></i> معلومات الحساب</a>
   <a href="#" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</a>
@@ -91,7 +125,6 @@
 <!-- المحتوى -->
 <div class="content">
   <div class="container" id="auth-box">
-    <!-- تسجيل الدخول -->
     <div id="login-form">
       <h2>تسجيل الدخول</h2>
       <input type="text" id="login-username" placeholder="اسم المستخدم" />
@@ -100,7 +133,6 @@
       <a id="to-register">إنشاء حساب</a>
     </div>
 
-    <!-- إنشاء حساب -->
     <div id="register-form" class="hidden">
       <h2>إنشاء حساب</h2>
       <input type="text" id="register-username" placeholder="اسم المستخدم" />
@@ -110,7 +142,6 @@
     </div>
   </div>
 
-  <!-- صفحة معلومات الحساب -->
   <div class="container hidden" id="account-page">
     <h2>معلومات الحساب</h2>
     <p id="acc-username">اسم المستخدم: —</p>
@@ -121,7 +152,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
 import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
 
-// إعداد Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyDVYoWats4bhKLbO8cu9hQ73WBjty-e5mA",
   authDomain: "aljj-28d36.firebaseapp.com",
@@ -141,21 +171,23 @@ function toggleForm() {
   document.getElementById("register-form").classList.toggle("hidden");
 }
 
-// عرض قسم من الصفحة
 window.showSection = function(sec){
   document.getElementById("auth-box").classList.add("hidden");
   document.getElementById("account-page").classList.add("hidden");
   document.getElementById(sec+"-page").classList.remove("hidden");
 };
 
-// تسجيل الخروج
 window.logout = function(){
   alert("تم تسجيل الخروج");
   location.reload();
 };
 
+// فتح وإغلاق القائمة
+const sidebar = document.getElementById("sidebar");
+openMenu.onclick = () => sidebar.classList.add("open");
+closeMenu.onclick = () => sidebar.classList.remove("open");
+
 window.addEventListener("DOMContentLoaded", () => {
-  // دخول
   document.getElementById("login-btn").onclick = async () => {
     const u = login-username.value.trim();
     const p = login-password.value.trim();
@@ -172,7 +204,6 @@ window.addEventListener("DOMContentLoaded", () => {
     } else alert("كلمة المرور خاطئة");
   };
 
-  // تسجيل
   document.getElementById("register-btn").onclick = async () => {
     const u = register-username.value.trim();
     const p = register-password.value.trim();
