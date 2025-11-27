@@ -1,246 +1,71 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Zom App</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<style>
- body {
-   font-family: Arial, sans-serif;
-   background: linear-gradient(to bottom right, #7B2FF7, #E100FF);
-   margin: 0;
-   color: white;
-   display: flex;
-   height: 100vh;
-   overflow: hidden;
- }
-
- /* زر فتح القائمة */
- .menu-btn {
-   position: absolute;
-   top: 20px;
-   left: 20px;
-   background: rgba(0,0,0,0.4);
-   padding: 12px 15px;
-   border-radius: 10px;
-   cursor: pointer;
-   font-size: 22px;
- }
-
- /* الشريط الجانبي */
- .sidebar {
-   width: 230px;
-   background: rgba(0, 0, 0, 0.3);
-   padding: 20px;
-   display: flex;
-   flex-direction: column;
-   gap: 20px;
-   height: 100%;
-   position: fixed;
-   top: 0;
-   right: -250px; /* مخفية افتراضياً */
-   transition: 0.4s;
- }
-
- .sidebar.open {
-   right: 0;
- }
-
- .close-btn {
-   align-self: flex-end;
-   font-size: 22px;
-   cursor: pointer;
-   padding: 8px;
- }
-
- .sidebar h2 {
-   text-align: center;
-   margin-bottom: 30px;
- }
- .sidebar a {
-   display: flex;
-   align-items: center;
-   gap: 10px;
-   color: white;
-   text-decoration: none;
-   padding: 12px;
-   background: rgba(255,255,255,0.1);
-   border-radius: 10px;
-   transition: 0.3s;
- }
- .sidebar a:hover { background: rgba(255,255,255,0.25); }
-
- /* المحتوى */
- .content {
-   flex: 1;
-   display: flex;
-   justify-content: center;
-   align-items: center;
-   width: 100%;
- }
- .container {
-   background-color: rgba(255, 255, 255, 0.1);
-   padding: 40px;
-   border-radius: 15px;
-   box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-   width: 350px;
-   text-align: center;
- }
- input {
-   width: 90%;
-   padding: 12px;
-   margin: 10px 0;
-   border: none;
-   border-radius: 8px;
- }
- button {
-   width: 95%;
-   padding: 12px;
-   margin-top: 10px;
-   border: none;
-   border-radius: 8px;
-   background-color: white;
-   color: #7B2FF7;
-   font-weight: bold;
-   cursor: pointer;
-   transition: 0.3s;
- }
- button:hover { background-color: #E0E0E0; }
- .hidden { display: none; }
-</style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Zom — لوحة الزبون</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="menu-btn" id="openMenu"><i class="fa-solid fa-bars"></i></div>
+<button id="openSidebarBtn" title="القائمة"><i class="fa-solid fa-arrow-right"></i></button>
 
-<!-- الشريط الجانبي -->
 <div class="sidebar" id="sidebar">
-  <div class="close-btn" id="closeMenu"><i class="fa-solid fa-xmark"></i></div>
-  <h2>ZOM</h2>
-  <a href="#" onclick="showSection('account')"><i class="fa-solid fa-user"></i> معلومات الحساب</a>
-  <a href="#" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</a>
+  <div style="display:flex;align-items:center;gap:8px;justify-content:space-between">
+    <div class="brand">
+      <div class="logo">Z</div>
+      <h3 style="margin:0">Zom</h3>
+    </div>
+    <button class="close-btn" id="sidebarCloseBtn" title="إغلاق"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <button class="nav-btn" id="homeBtn"><span>Zom</span><i class="fa-solid fa-house"></i></button>
+  <button class="nav-btn" id="deliveryBtn"><span>صفحة توصيل السلع</span><i class="fa-solid fa-truck"></i></button>
+  <button class="nav-btn" id="profileBtn"><span>الصفحة الشخصية</span><i class="fa-solid fa-user"></i></button>
+  <div style="flex:1"></div>
+  <button class="nav-btn" id="logoutBtn"><span>تسجيل الخروج</span><i class="fa-solid fa-sign-out-alt"></i></button>
 </div>
 
-<!-- المحتوى -->
-<div class="content">
-  <div class="container" id="auth-box">
-    <div id="login-form">
-      <h2>تسجيل الدخول</h2>
-      <input type="text" id="login-username" placeholder="اسم المستخدم" />
-      <input type="password" id="login-password" placeholder="كلمة المرور" />
-      <button id="login-btn">دخول</button>
-      <a id="to-register">إنشاء حساب</a>
-    </div>
+<div class="overlay" id="overlay"></div>
 
-    <div id="register-form" class="hidden">
-      <h2>إنشاء حساب</h2>
-      <input type="text" id="register-username" placeholder="اسم المستخدم" />
-      <input type="password" id="register-password" placeholder="كلمة المرور" />
-      <button id="register-btn">إنشاء الحساب</button>
-      <a id="to-login">تسجيل الدخول</a>
+<div id="app" class="app">
+  <!-- شاشة تسجيل الدخول -->
+  <div id="authScreen" class="auth-wrap">
+    <div class="auth-card">
+      <div class="brand-big">
+        <div class="logo">Z</div>
+        <div>
+          <div class="name">Zom</div>
+          <div class="subtitle">سجّل دخولك للمتابعة</div>
+        </div>
+      </div>
+      <div class="form-row">
+        <input id="username" type="text" placeholder="اسم المستخدم" />
+        <input id="password" type="password" placeholder="كلمة المرور" />
+      </div>
+      <div class="auth-actions">
+        <button id="loginBtn" class="btn">تسجيل الدخول</button>
+        <button id="signupBtn" class="btn ghost">إنشاء حساب</button>
+      </div>
+      <div class="hint">سجّل دخولك أو أنشئ حسابًا جديدًا للانتقال للوحة Zom</div>
     </div>
   </div>
 
-  <div class="container hidden" id="account-page">
-    <h2>معلومات الحساب</h2>
-    <p id="acc-username">اسم المستخدم: —</p>
+  <!-- لوحة Zom الرئيسية -->
+  <div id="zomScreen" style="display:none;">
+    <div class="topbar">
+      <div class="title"><div style="background:var(--accent);width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-weight:800">Z</div> <div>Zom</div></div>
+      <div class="subtitle" id="topUser">غير مسجل</div>
+    </div>
+    <main class="main">
+      <div class="card" id="mainCard">
+        <p class="welcome" id="welcomeText">أهلاً بك في Zom</p>
+        <p class="muted" id="mutedText">استخدم القائمة لعرض صفحة توصيل السلع أو الصفحة الشخصية.</p>
+      </div>
+    </main>
   </div>
 </div>
 
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyDVYoWats4bhKLbO8cu9hQ73WBjty-e5mA",
-    authDomain: "aljj-28d36.firebaseapp.com",
-    databaseURL: "https://aljj-28d36-default-rtdb.firebaseio.com",
-    projectId: "aljj-28d36",
-    storageBucket: "aljj-28d36.firebasestorage.app",
-    messagingSenderId: "256012982420",
-    appId: "1:256012982420:web:3a1541af04b99d658e7c81",
-    measurementId: "G-43WH1GKJFC"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyDVYoWats4bhKLbO8cu9hQ73WBjty-e5mA",
-  authDomain: "aljj-28d36.firebaseapp.com",
-  databaseURL: "https://aljj-28d36-default-rtdb.firebaseio.com",
-  projectId: "aljj-28d36",
-  storageBucket: "aljj-28d36.firebasestorage.app",
-  messagingSenderId: "256012982420",
-  appId: "1:256012982420:web:3a1541af04b99d658e7c81",
-  measurementId: "G-43WH1GKJFC"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-
-function toggleForm() {
-  document.getElementById("login-form").classList.toggle("hidden");
-  document.getElementById("register-form").classList.toggle("hidden");
-}
-
-window.showSection = function(sec){
-  document.getElementById("auth-box").classList.add("hidden");
-  document.getElementById("account-page").classList.add("hidden");
-  document.getElementById(sec+"-page").classList.remove("hidden");
-};
-
-window.logout = function(){
-  alert("تم تسجيل الخروج");
-  location.reload();
-};
-
-// فتح وإغلاق القائمة
-const sidebar = document.getElementById("sidebar");
-openMenu.onclick = () => sidebar.classList.add("open");
-closeMenu.onclick = () => sidebar.classList.remove("open");
-
-window.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("login-btn").onclick = async () => {
-    const u = document.getElementById("login-username").value.trim();
-    const p = document.getElementById("login-password").value.trim();
-    if(!u || !p) return alert("املأ الحقول");
-
-    const userRef = ref(db, 'users/' + u);
-    const snap = await get(userRef);
-
-    if(!snap.exists()) return alert("المستخدم غير موجود");
-
-    if(snap.val().password === p){
-      acc-username.textContent = "اسم المستخدم: " + u;
-      showSection('account');
-    } else alert("كلمة المرور خاطئة");
-  };
-
-  document.getElementById("register-btn").onclick = async () => {
-    const u = document.getElementById("register-username").value.trim();
-    const p = document.getElementById("register-password").value.trim();
-    if(!u || !p) return alert("املأ الحقول");
-
-    const userRef = ref(db, 'users/' + u);
-    const snap = await get(userRef);
-
-    if(snap.exists()) return alert("اسم المستخدم موجود");
-
-    await set(userRef,{password:p});
-    alert("تم إنشاء الحساب");
-    toggleForm();
-  };
-
-  to-register.onclick = toggleForm;
-  to-login.onclick = toggleForm;
-});
-</script>
-
+<script type="module" src="app.js"></script>
 </body>
- </html>
+</html>
